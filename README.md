@@ -22,7 +22,7 @@ gem install ace-config
 require 'ace_config'
 
 module MyApp
-  extend AceConfig
+  extend AceDeck
 end 
 
 MyApp.configure :settings do
@@ -32,9 +32,9 @@ MyApp.configure :settings do
   config custom_typed_opt_one: 42, type: Integer
 end
 
-MyApp.settings.option # => 42
-MyApp.settings.typed_opt_one # => 42
-MyApp.settings.typed_opt_two # => 4.2
+MyApp.settings.option               # => 42
+MyApp.settings.typed_opt_one        # => 42
+MyApp.settings.typed_opt_two        # => 4.2
 MyApp.settings.custom_typed_opt_one # => 42
 ```
 ## Gem Config Declaration
@@ -42,22 +42,22 @@ MyApp.settings.custom_typed_opt_one # => 42
 ```ruby
 require 'ace_config'
 
-module MyApp
-  extend AceConfig
+module MyGem
+  extend AceDeck
 end 
 
-MyApp.configure :settings do
-  config option: 42
-  config.int typed_opt_one: 42
-  config typed_opt_two: 4.2, type: :float
-  config custom_typed_opt_one: 42, type: Integer
+MyGem.configure :settings do
+  config :option
+  config.int :typed_opt_one
+  config :typed_opt_two, type: :float
+  config :custom_typed_opt_one, type: Integer
 end
 
-MyApp.settings.config declared_option: 1
-MyApp.settings.config declared_typed_option: 1
-MyApp.settings.config declared_custom_typed_option: 1
-MyApp.settings.config declared_typed_option: '1' # => raise SettingTypeError
-MyApp.settings.config declared_custom_typed_option: '1' # => raise SettingTypeError
+MyGem.settings.config declared_option: 1
+MyGem.settings.config declared_typed_option: 1
+MyGem.settings.config declared_custom_typed_option: 1
+MyGem.settings.config declared_typed_option: '1'        # => raise AceConfigErr::SettingTypeError
+MyGem.settings.config declared_custom_typed_option: '1' # => raise AceConfigErr::SettingTypeError
 ``` 
 
 ## Development
