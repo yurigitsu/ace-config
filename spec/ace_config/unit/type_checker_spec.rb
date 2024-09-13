@@ -11,7 +11,7 @@ RSpec.describe TypeChecker do
     end
 
     it "raises an error for nonexistent types" do
-      expect { described_class.call(1, type: :unsupported) }.to raise_error(TypeCheckerError)
+      expect { described_class.call(1, type: :unsupported) }.to raise_error(AceConfigErr::TypeCheckerError)
     end
   end
 
@@ -35,7 +35,7 @@ RSpec.describe TypeChecker do
     end
 
     it "raises an error for nonexistent types" do
-      expect { described_class.base_type(1, :nonexistent) }.to raise_error(TypeCheckerError)
+      expect { described_class.base_type(1, :nonexistent) }.to raise_error(AceConfigErr::TypeCheckerError)
     end
 
     it "handles nil values" do
@@ -77,7 +77,7 @@ RSpec.describe TypeChecker do
     end
 
     it "raises an error for nonexistent types" do
-      expect { described_class.fetch_type(:nonexistent) }.to raise_error(TypeCheckerError)
+      expect { described_class.fetch_type(:nonexistent) }.to raise_error(AceConfigErr::TypeCheckerError)
     end
   end
 end

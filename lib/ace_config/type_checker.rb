@@ -5,10 +5,10 @@ class TypeChecker
   class << self
     # Calls the appropriate validation method based on the type.
     #
-    # @param value [Object] the value to validate
-    # @param type [Symbol, Array, Class] the type(s) to validate against
-    # @param opts [Hash] additional options
-    # @return [Boolean] true if the value matches the type
+    # @param value [Object] The value to validate.
+    # @param type [Symbol, Array<Symbol, Class>, Class] The type(s) to validate against.
+    # @return [Boolean] True if the value matches the type, false otherwise.
+    # @raise [TypeCheckerError] if the type is unsupported or not defined.
     #
     # @example
     #   TypeChecker.call(1, type: :int) # => true
@@ -27,6 +27,7 @@ class TypeChecker
     # @param value [Object] the value to validate
     # @param type [Class] the type to validate against
     # @return [Boolean] true if the value matches the base type
+    # @raise [TypeCheckerError] if the type is unsupported or not defined.
     #
     # @example
     #   TypeChecker.base_type(1, Integer) # => true
@@ -77,7 +78,7 @@ class TypeChecker
     #   TypeChecker.fetch_type(:bool) # => [:truthy, :falsy]
     def fetch_type(type)
       basic_type = TypeMap.get(type)
-      raise TypeCheckerError, type unless basic_type
+      raise AceConfigErr::TypeCheckerError, type unless basic_type
 
       basic_type
     end

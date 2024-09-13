@@ -43,7 +43,7 @@ RSpec.describe Setting do
 
   describe "#config" do
     it "raises an error for invalid type" do
-      expect { setting.config(key: "value", type: :int) }.to raise_error(SettingTypeError)
+      expect { setting.config(key: "value", type: :int) }.to raise_error(AceConfigErr::SettingTypeError)
     end
 
     it "stores valid configuration" do

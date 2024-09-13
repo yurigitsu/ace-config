@@ -42,13 +42,30 @@ module AceDeck
     extend anonym_module
   end
 
-  private
+  module_function
 
+  # Loads configuration data from various sources based on the provided options.
+  #
+  # @param opts [Hash] Optional options for loading configuration data.
+  # @option opts [Hash] :hash A hash containing configuration data.
+  # @option opts [String] :json A JSON string containing configuration data.
+  # @option opts [String] :yaml A file path to a YAML file containing configuration data.
+  # @return [Hash] The loaded configuration data.
+  # @raise [LoadDataError] If no valid data is found.
+  #
+  # @example Loading from a hash
+  #   load_data(hash: { key: "value" })
+  #
+  # @example Loading from a JSON string
+  #   load_data(json: '{"key": "value"}')
+  #
+  # @example Loading from a YAML file
+  #   load_data(yaml: 'config/settings.yml')
   def load_data(opts = {})
     data = opts[:hash] if opts[:hash]
     data = JSON.parse(opts[:json]) if opts[:json]
     data = YAML.load_file(opts[:yaml]) if opts[:yaml]
-    raise "Invalid file type" unless data
+    raise AceConfigException::LoadDataError, "Invalid load source type" unless data
 
     data
   end

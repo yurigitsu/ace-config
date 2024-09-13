@@ -54,10 +54,9 @@ class Setting
     end
   end
 
-  # Configure a node of the configuration tree.
+  # Configures a node of the configuration tree.
   #
   # @param node [Symbol, String] The name of the config node key.
-  # @param value [Object] Optional value for the node.
   # @yield [Setting] A block that configures the new node.
   #
   # @example Configuring a new node
@@ -65,7 +64,7 @@ class Setting
   #     config(:host, value: "localhost")
   #     config(:port, value: 5432)
   #   end
-  def configure(node, _value = nil, &block)
+  def configure(node, &block)
     if config_tree[node]
       config_tree[node].instance_eval(&block)
     else
@@ -142,9 +141,9 @@ class Setting
     to_h.to_json
   end
 
-  # @return [Hash] The schema of configuration types.
   protected
 
+  # @return [Hash] The schema of configuration types.
   attr_reader :schema
 
   private
@@ -202,7 +201,7 @@ class Setting
   #   validate_setting!("string", :int) # Raises SettingTypeError
   def validate_setting!(stng_val, stng_type)
     is_valid = TypeChecker.call(stng_val, type: stng_type)
-    raise SettingTypeError.new(stng_type, stng_val) unless !stng_val || is_valid
+    raise AceConfigErr::SettingTypeError.new(stng_type, stng_val) unless !stng_val || is_valid
   end
 
   # Sets the configuration for a given setting name, value, and type.

@@ -32,15 +32,21 @@ RSpec.describe AceDeck do
       end
 
       it "has #type_opt config param" do
-        expect { configs.settings.nested.config(t_opt: stng_values[:text]) }.to raise_error(SettingTypeError)
+        expect do
+          configs.settings.nested.config(t_opt: stng_values[:text])
+        end.to raise_error(AceConfigErr::SettingTypeError)
       end
 
       it "has #t_opt config param" do
-        expect { configs.settings.nested.config(type_opt: stng_values[:text]) }.to raise_error(SettingTypeError)
+        expect do
+          configs.settings.nested.config(type_opt: stng_values[:text])
+        end.to raise_error(AceConfigErr::SettingTypeError)
       end
 
-      it "has #ctm_t_type_opt config param" do
-        expect { configs.settings.nested.config(cstm_type_opt: stng_values[:text]) }.to raise_error(SettingTypeError)
+      it "has #cstm_type_opt config param" do
+        expect do
+          configs.settings.nested.config(cstm_type_opt: stng_values[:text])
+        end.to raise_error(AceConfigErr::SettingTypeError)
       end
     end
 
