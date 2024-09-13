@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
 
   spec.summary     = "A flexible and easy-to-use configuration handling gem."
   spec.description = "Managing configurations with type validation, configirations load and dumping support."
-  spec.homepage    = "https://github.com/yurigitsu/" + spec.name
+  spec.homepage    = "https://github.com/yurigitsu/#{spec.name}"
 
   spec.required_ruby_version = ">= 3.0.0"
 
@@ -25,14 +25,13 @@ Gem::Specification.new do |spec|
 
   spec.metadata["repo_homepage"]     = "https://github.com/yurigitsu/"
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
-  
-  spec.metadata["homepage_uri"]    = spec.homepage
-  spec.metadata["changelog_uri"]   = spec.homepage + "/blob/main/CHANGELOG.md"
-  spec.metadata["source_code_uri"] = spec.homepage
-  spec.metadata["bug_tracker_uri"] = spec.homepage + "/issues"
 
-  spec.add_development_dependency "bundler"
-  spec.add_development_dependency "rake"
-  spec.add_development_dependency "rspec"
-  spec.add_development_dependency "pry"
+  spec.metadata["homepage_uri"]    = spec.homepage
+  spec.metadata["changelog_uri"]   = "#{spec.homepage}/blob/main/CHANGELOG.md"
+  spec.metadata["source_code_uri"] = spec.homepage
+  spec.metadata["bug_tracker_uri"] = "#{spec.homepage}/issues"
+
+  spec.metadata["rubygems_mfa_required"] = "true"
+
+  spec.add_dependency "bigdecimal"
 end

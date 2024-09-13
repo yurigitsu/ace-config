@@ -1,10 +1,13 @@
+# Start of Selection
 # frozen_string_literal: true
 
 source "https://rubygems.org"
 
-# Specify your gem's dependencies in ace-config.gemspec
 gemspec
 
-gem "rake", "~> 13.0"
+gem "pry"
+gem "rake"
 gem "rspec", "~> 3.0"
 gem "rubocop", "~> 1.21"
+gem "rubocop-rake"
+gem "rubocop-rspec", require: false
