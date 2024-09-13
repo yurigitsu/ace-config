@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# AceDeck module provides functionality for managing AceDeck features.
 module AceDeck
   # Creates a class-level method for the configuration tree.
   #
@@ -30,23 +31,25 @@ module AceDeck
   def configure(config_tree_name, opts = {}, &block)
     settings = block ? Setting.new(&block) : Setting.new
 
-    # [WIP:]
-    if !opts.empty?
-      data = opts[:hash] if opts[:hash]
-      data = JSON.load(opts[:json]) if opts[:json]
-      data = YAML.load_file(opts[:yaml]) if opts[:yaml]
-
-      raise "Invalid file type" unless data
-
-      settings.load_from_hash(data)
-    end
+    load_configs = load_data(opts) unless opts.empty?
+    settings.load_from_hash(load_configs) if load_configs
 
     anonym_module = Module.new
-
     anonym_module.define_method(config_tree_name) do |&tree_block|
       tree_block ? settings.instance_eval(&tree_block) : settings
     end
 
     extend anonym_module
+  end
+
+  private
+
+  def load_data(opts = {})
+    data = opts[:hash] if opts[:hash]
+    data = JSON.parse(opts[:json]) if opts[:json]
+    data = YAML.load_file(opts[:yaml]) if opts[:yaml]
+    raise "Invalid file type" unless data
+
+    data
   end
 end

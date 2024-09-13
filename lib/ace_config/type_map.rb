@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'bigdecimal'
+require "bigdecimal"
 require "date"
 
 # A class that maps type symbols to their corresponding Ruby classes and provides
@@ -16,8 +16,8 @@ class TypeMap
     str: String,
     sym: Symbol,
     null: NilClass,
-    true: TrueClass,
-    false: FalseClass,
+    true_class: TrueClass,
+    false_class: FalseClass,
     # data structures
     hash: Hash,
     array: Array,
@@ -33,11 +33,11 @@ class TypeMap
     # any type
     any: Object,
     # composite types
-    bool: nil, # Placeholder for boolean types
-    numeric: [:int, :float, :big_decimal],
-    kernel_num: [:int, :float, :big_decimal, :complex, :rational],
-    chrono: [:date, :date_time, :time]
-  }
+    bool: %i[true_class false_class],
+    numeric: %i[int float big_decimal],
+    kernel_num: %i[int float big_decimal complex rational],
+    chrono: %i[date date_time time]
+  }.freeze
 
   # Retrieves the Ruby class associated with a given type symbol.
   #
@@ -57,7 +57,10 @@ class TypeMap
   # @return [Array<Symbol>] An array containing all keys from TYPE_MAP.
   #
   # @example
-  #   TypeMap.list_types # => [:int, :str, :sym, :null, :true, :false, :hash, :array, :big_decimal, :float, :complex, :rational, :date, :date_time, :time, :any, :bool, :numeric, :kernel_num, :chrono]
+  #   TypeMap.list_types # => [:int, :str, :sym, :null, :true_class, :false_class,
+  #                          :hash, :array, :big_decimal, :float, :complex,
+  #                          :rational, :date, :date_time, :time, :any,
+  #                          :bool, :numeric, :kernel_num, :chrono]
   def self.list_types
     TYPE_MAP.keys
   end

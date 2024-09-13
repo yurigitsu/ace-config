@@ -22,13 +22,6 @@ class Setting
     define_method(type.downcase) { |stng| config(stng, type: type) }
   end
 
-  # @return [Hash] The schema of configuration types.
-  protected attr_reader :schema
-
-  # @return [Hash] The tree structure of configuration settings.
-  private attr_reader :config_tree
-
-
   # Initializes a new Setting instance.
   #
   # @yield [self] Optional block to configure the instance upon creation.
@@ -36,11 +29,11 @@ class Setting
   #   settings = Setting.new do
   #     config(:username, value: "admin")
   #   end
-  def initialize(&)
+  def initialize(&block)
     @schema = {}
     @config_tree = {}
 
-    instance_eval(&) if block_given?
+    instance_eval(&block) if block_given?
   end
 
   # Loads configuration from a hash.
@@ -72,20 +65,11 @@ class Setting
   #     config(:host, value: "localhost")
   #     config(:port, value: 5432)
   #   end
-  def configure(node, value = nil, &)
+  def configure(node, _value = nil, &block)
     if config_tree[node]
-      config_tree[node].instance_eval(&)
+      config_tree[node].instance_eval(&block)
     else
-      new_node = Setting.new(&)
-      config_tree[node] = new_node
-
-      define_singleton_method(node) do |*args, &node_block|
-        if node_block
-          config_tree[node].instance_eval(&node_block)
-        else
-          config_tree[node]
-        end
-      end
+      create_new_node(node, &block)
     end
   end
 
@@ -103,18 +87,12 @@ class Setting
     return self if !setting && opt.empty?
 
     stngs = setting || opt
+    stng = extract_setting_info(stngs)
 
-    stng_name, stng_val = stngs, nil if stngs.is_a?(Symbol)
-    stng_name, stng_val = stngs.to_a.first if stngs.is_a?(Hash)
+    stng_type = type || schema[stng[:name]] || :any
+    validate_setting!(stng[:value], stng_type)
 
-    stng_type = type || schema[stng_name] || :any
-
-    is_valid = TypeChecker.call(stng_val, type: stng_type)
-    raise SettingTypeError.new(stng_type, stng_val) unless !stng_val || is_valid
-
-    schema[stng_name] = stng_type
-    config_tree[stng_name] = stng_val
-    define_singleton_method(stng_name) { config_tree[stng_name] }
+    set_configuration(stng[:name], stng[:value], stng_type)
   end
 
   # Returns the type schema of the configuration.
@@ -160,7 +138,84 @@ class Setting
   # @return [String] The JSON representation of the configuration tree.
   # @example Converting to JSON
   #   json_string = settings.to_json
-  def to_json
+  def to_json(*_args)
     to_h.to_json
+  end
+
+  # @return [Hash] The schema of configuration types.
+  protected
+
+  attr_reader :schema
+
+  private
+
+  # @return [Hash] The tree structure of configuration settings.
+  attr_reader :config_tree
+
+  # Creates a new node in the configuration tree.
+  #
+  # @param node [Symbol] The name of the node to create.
+  # @yield [Setting] A block to configure the new setting.
+  # @return [Setting] The newly created setting node.
+  #
+  # @example Creating a new node
+  #   create_new_node(:my_setting) do
+  #     # configuration for my_setting
+  #   end
+  def create_new_node(node, &block)
+    new_node = Setting.new(&block)
+    config_tree[node] = new_node
+
+    define_singleton_method(node) do |*_args, &node_block|
+      if node_block
+        config_tree[node].instance_eval(&node_block)
+      else
+        config_tree[node]
+      end
+    end
+  end
+
+  # Extracts the setting information from the provided input.
+  #
+  # @param stngs [Symbol, Hash] The setting name or a hash containing the setting name and value.
+  # @return [Hash] A hash containing the setting name and its corresponding value.
+  #
+  # @example
+  #   extract_setting_info(:my_setting) # => { name: :my_setting, value: nil }
+  #   extract_setting_info({ my_setting: 10 }) # => { name: :my_setting, value: 10 }
+  def extract_setting_info(stngs)
+    val = nil
+    name = stngs if stngs.is_a?(Symbol)
+    name, val = stngs.to_a.first if stngs.is_a?(Hash)
+
+    { name: name, value: val }
+  end
+
+  # Validates the setting value against the expected type.
+  #
+  # @param stng_val [Object] The value of the setting to validate.
+  # @param stng_type [Symbol] The expected type of the setting.
+  # @raise [SettingTypeError] If the setting value does not match the expected type.
+  #
+  # @example
+  #   validate_setting!(10, :int) # Validates successfully
+  #   validate_setting!("string", :int) # Raises SettingTypeError
+  def validate_setting!(stng_val, stng_type)
+    is_valid = TypeChecker.call(stng_val, type: stng_type)
+    raise SettingTypeError.new(stng_type, stng_val) unless !stng_val || is_valid
+  end
+
+  # Sets the configuration for a given setting name, value, and type.
+  #
+  # @param stng_name [Symbol] The name of the setting to configure.
+  # @param stng_val [Object] The value to assign to the setting.
+  # @param stng_type [Symbol] The type of the setting.
+  #
+  # @example
+  #   set_configuration(:max_connections, 10, :int)
+  def set_configuration(stng_name, stng_val, stng_type)
+    schema[stng_name] = stng_type
+    config_tree[stng_name] = stng_val
+    define_singleton_method(stng_name) { config_tree[stng_name] }
   end
 end
