@@ -1,8 +1,16 @@
-# AceConfig
+# ace-config
+
+
+
+**ace-config** is a Ruby gem created to simplify managing application configurations and enhance the development of other gems that require configuration management. It offers a simple interface for defining, setting, and retrieving configuration options with type validation, helping ensure configurations are correct and reliable.
+
+**ace-config** provides built-in support for importing and exporting configurations in JSON, YAML, and Hash formats, enhancing versatility. 
+
+**ace-config** offers various built-in types like basic types, data structures, numeric types, and time types.
+
+**ace-config** supports infinite nested configurations and 'classy' access providing a flexible and powerful configuration management solution.
 
 ## Installation
-
-Replace `ace-config` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
 
 Install the gem and add to the application's Gemfile by executing:
 
@@ -22,43 +30,138 @@ gem install ace-config
 require 'ace_config'
 
 module MyApp
-  extend AceConfig
+  extend AceDeck
 end 
 
 MyApp.configure :settings do
   config option: 42
   config.int typed_opt_one: 42
-  config typed_opt_two: 4.2, type: :float
-  config custom_typed_opt_one: 42, type: Integer
+  config typed_opt_two: 4.2, type: :float  
+  configure :nested do
+    config opt: 42
+    configure :deep_nested do
+      config opt: 42
+    end
+  end
 end
 
-MyApp.settings.option # => 42
-MyApp.settings.typed_opt_one # => 42
-MyApp.settings.typed_opt_two # => 4.2
-MyApp.settings.custom_typed_opt_one # => 42
+MyApp.settings.option                 # => 42
+MyApp.settings.typed_opt_one          # => 42
+MyApp.settings.typed_opt_two          # => 4.2
+MyApp.settings.nested.opt             # => 42
+MyApp.settings.nested.deep_nested.opt # => 42
 ```
-## Gem Config Declaration
+
+### Type validation
+```ruby
+MyApp.configure :settings do
+  config custom_typed_opt_one: '42', type: :float
+end
+# => AceConfigErr::SettingTypeError
+```
+
+## Gem Configurations Usage
 
 ```ruby
 require 'ace_config'
 
-module MyApp
-  extend AceConfig
+module MyGem
+  extend AceDeck
 end 
+```
 
-MyApp.configure :settings do
-  config option: 42
-  config.int typed_opt_one: 42
-  config typed_opt_two: 4.2, type: :float
-  config custom_typed_opt_one: 42, type: Integer
+### Declare configurations
+```ruby
+MyGem.configure :settings do
+  config :option
+  config.int :typed_opt_one
+  config :typed_opt_two, type: Integer
+  # NOTE: declare nested namespace with <symbol arg>
+  configure :nested do
+    config :option
+  end
 end
+```
 
-MyApp.settings.config declared_option: 1
-MyApp.settings.config declared_typed_option: 1
-MyApp.settings.config declared_custom_typed_option: 1
-MyApp.settings.config declared_typed_option: '1' # => raise SettingTypeError
-MyApp.settings.config declared_custom_typed_option: '1' # => raise SettingTypeError
+### Set configurations
+```ruby
+MyGem.settings do 
+  config option: 1
+  config typed_opt_one: 1
+  config typed_opt_two: 1 
+  # NOTE: access namespace for set via <.dot_access> 
+  config.nested do 
+    config option: 1
+  end
+end
+```
+
+### Get configurations
+```ruby
+MyGem.settings.option        # => 1
+MyGem.settings.typed_opt_one # => 1
+MyGem.settings.typed_opt_two # => 1
+```
+
+### Type validation
+```ruby
+MyGem.settings do 
+  config.typed_opt_two: '1'
+end
+# => AceConfigErr::SettingTypeError
+```
+
+### to_h
+```ruby
+MyGem.settings.to_h # => { option: 1, typed_opt_one: 1, typed_opt_two: 1 }
+```
+
+### to_json
+```ruby
+MyGem.settings.to_json # => "{\"option\":1,\"typed_opt_one\":1,\"typed_opt_two\":1}"
+```
+
+### to_yaml
+```ruby
+MyGem.settings.to_yaml # => "---\noption: 1\ntyped_opt_one: 1\ntyped_opt_two: 1\n"
 ``` 
+
+## Built-in Types
+
+```ruby
+# Base Types
+:int  => Integer
+:str  => String
+:sym  => Symbol
+:null => NilClass
+:any  => Object
+:true_class  => TrueClass
+:false_class => FalseClass
+
+# Data Structures
+:hash  => Hash
+:array => Array
+```
+### Numeric
+```ruby
+:big_decimal => BigDecimal,
+:float       => Float,
+:complex     => Complex,
+:rational    => Rational,
+```
+### Time 
+```ruby
+:date      => Date,
+:date_time => DateTime,
+:time      => Time,
+```
+### Composite
+```ruby
+:bool       => [TrueClass, FalseClass],
+:numeric    => [Integer, Float, BigDecimal],
+:kernel_num => [Integer, Float, BigDecimal, Complex, Rational],
+:chrono     => [Date, DateTime, Time]
+```
 
 ## Development
 
