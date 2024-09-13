@@ -76,6 +76,7 @@ MyGem.configure :settings do
   config :option
   config.int :typed_opt_one
   config :typed_opt_two, type: Integer
+  # NOTE: declare nested namespace with <symbol arg>
   configure :nested do
     config :option
   end
@@ -88,6 +89,7 @@ MyGem.settings do
   config option: 1
   config typed_opt_one: 1
   config typed_opt_two: 1 
+  # NOTE: access namespace for set via <.dot_access> 
   config.nested do 
     config option: 1
   end
