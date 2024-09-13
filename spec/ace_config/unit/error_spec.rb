@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 
-RSpec.describe 'Errors' do  
+RSpec.describe "Errors" do
   describe "SettingTypeError" do
     it "sets the error message correctly" do
       error = SettingTypeError.new(:int, "string")
