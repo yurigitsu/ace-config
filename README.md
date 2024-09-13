@@ -1,8 +1,15 @@
-# AceConfig
+# ace-config
+
+## Description
+
+# Start of Selection
+**ace-config** is a Ruby gem created to simplify managing application configurations and enhance the development of other gems that require configuration management. It offers a simple interface for defining, setting, and retrieving configuration options with type validation, helping ensure configurations are correct and reliable.
+
+**ace-config** provides built-in support for importing and exporting configurations in JSON, YAML, and Hash formats, enhancing versatility. 
+
+Additionally, it offers various built-in types like basic types, data structures, numeric types, and time types.
 
 ## Installation
-
-Replace `ace-config` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
 
 Install the gem and add to the application's Gemfile by executing:
 
@@ -28,16 +35,23 @@ end
 MyApp.configure :settings do
   config option: 42
   config.int typed_opt_one: 42
-  config typed_opt_two: 4.2, type: :float
-  config custom_typed_opt_one: 42, type: Integer
+  config typed_opt_two: 4.2, type: :float  
 end
 
 MyApp.settings.option               # => 42
 MyApp.settings.typed_opt_one        # => 42
 MyApp.settings.typed_opt_two        # => 4.2
-MyApp.settings.custom_typed_opt_one # => 42
 ```
-## Gem Config Declaration
+
+### Type validation
+```ruby
+MyApp.configure :settings do
+  config custom_typed_opt_one: '42', type: :float
+end
+# => AceConfigErr::SettingTypeError
+```
+
+## Gem Configurations Usage
 
 ```ruby
 require 'ace_config'
@@ -45,20 +59,92 @@ require 'ace_config'
 module MyGem
   extend AceDeck
 end 
+```
 
+### Declare configurations
+```ruby
 MyGem.configure :settings do
   config :option
   config.int :typed_opt_one
-  config :typed_opt_two, type: :float
-  config :custom_typed_opt_one, type: Integer
+  config :typed_opt_two, type: Integer
 end
+```
 
-MyGem.settings.config declared_option: 1
-MyGem.settings.config declared_typed_option: 1
-MyGem.settings.config declared_custom_typed_option: 1
-MyGem.settings.config declared_typed_option: '1'        # => raise AceConfigErr::SettingTypeError
-MyGem.settings.config declared_custom_typed_option: '1' # => raise AceConfigErr::SettingTypeError
+### Set configurations
+```ruby
+MyGem.settings do 
+  config.option: 1
+  config.typed_opt_one: 1
+  config.typed_opt_two: 1 
+end
+```
+
+### Get configurations
+```ruby
+MyGem.settings.option        # => 1
+MyGem.settings.typed_opt_one # => 1
+MyGem.settings.typed_opt_two # => 1
+```
+
+### Type validation
+```ruby
+MyGem.settings do 
+  config.typed_opt_two: '1'
+end
+# => AceConfigErr::SettingTypeError
+```
+
+### to_h
+```ruby
+MyGem.settings.to_h # => { option: 1, typed_opt_one: 1, typed_opt_two: 1 }
+```
+
+### to_json
+```ruby
+MyGem.settings.to_json # => "{\"option\":1,\"typed_opt_one\":1,\"typed_opt_two\":1}"
+```
+
+### to_yaml
+```ruby
+MyGem.settings.to_yaml # => "---\noption: 1\ntyped_opt_one: 1\ntyped_opt_two: 1\n"
 ``` 
+
+## Built-in Types
+
+```ruby
+# Base Types
+:int  => Integer
+:str  => String
+:sym  => Symbol
+:null => NilClass
+:any  => Object
+:true_class  => TrueClass
+:false_class => FalseClass
+
+# Data Structures
+:hash  => Hash
+:array => Array
+```
+### Numeric
+```ruby
+:big_decimal => BigDecimal,
+:float       => Float,
+:complex     => Complex,
+:rational    => Rational,
+```
+### Time 
+```ruby
+:date      => Date,
+:date_time => DateTime,
+:time      => Time,
+```
+### Composite
+```ruby
+:bool       => [TrueClass, FalseClass],
+:numeric    => [Integer, Float, BigDecimal],
+:kernel_num => [Integer, Float, BigDecimal, Complex, Rational],
+:chrono     => [Date, DateTime, Time]
+```
 
 ## Development
 
