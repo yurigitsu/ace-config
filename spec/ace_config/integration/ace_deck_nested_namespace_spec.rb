@@ -27,58 +27,68 @@ RSpec.describe AceDeck do
 
     describe "declared typed #config" do
       it "has #opt config param" do
-        configs.settings.config(opt: stng_values[:text])
+        configs.settings.config opt: stng_values[:text]
         expect(configs.settings.opt).to eq(stng_values[:text])
       end
 
       it "has #type_opt config param" do
         expect do
-          configs.settings.nested.config(t_opt: stng_values[:text])
+          configs.settings.nested.config t_opt: stng_values[:text]
         end.to raise_error(AceConfigErr::SettingTypeError)
       end
 
       it "has #t_opt config param" do
         expect do
-          configs.settings.nested.config(type_opt: stng_values[:text])
+          configs.settings.nested.config type_opt: stng_values[:text]
         end.to raise_error(AceConfigErr::SettingTypeError)
       end
 
       it "has #cstm_type_opt config param" do
         expect do
-          configs.settings.nested.config(cstm_type_opt: stng_values[:text])
+          configs.settings.nested.config cstm_type_opt: stng_values[:text]
         end.to raise_error(AceConfigErr::SettingTypeError)
       end
     end
 
     context "when retrieving configuration details" do
       before do
-        configs.settings.nested.config(opt: stng_values[:text])
-        configs.settings.nested.config(t_opt: stng_values[:int])
-        configs.settings.nested.config(type_opt: stng_values[:int])
-        configs.settings.nested.config(cstm_type_opt: stng_values[:int])
+        val = stng_values
+
+        configs.settings.nested do
+          config opt: val[:text]
+          config t_opt: val[:int]
+          config type_opt: val[:int]
+          config cstm_type_opt: val[:int]
+        end
+      end
+
+      let(:expected_structure) do
+        {
+          nested: {
+            opt: stng_values[:text],
+            t_opt: stng_values[:int],
+            type_opt: stng_values[:int],
+            cstm_type_opt: stng_values[:int]
+          }
+        }
       end
 
       it "returns the type schema of the configuration" do
         expected_schema = { nested: { opt: :any, t_opt: :int, type_opt: :int, cstm_type_opt: Integer } }
+
         expect(configs.settings.type_schema).to eq(expected_schema)
       end
 
       it "converts the configuration tree to a hash" do
-        expected_hash = { nested: { opt: stng_values[:text], t_opt: stng_values[:int], type_opt: stng_values[:int],
-                                    cstm_type_opt: stng_values[:int] } }
-        expect(configs.settings.to_h).to eq(expected_hash)
+        expect(configs.settings.to_h).to eq(expected_structure)
       end
 
       it "converts the configuration tree to JSON" do
-        expected_json = { nested: { opt: stng_values[:text], t_opt: stng_values[:int], type_opt: stng_values[:int],
-                                    cstm_type_opt: stng_values[:int] } }.to_json
-        expect(configs.settings.to_json).to eq(expected_json)
+        expect(configs.settings.to_json).to eq(expected_structure.to_json)
       end
 
       it "converts the configuration tree to YAML" do
-        expected_yaml = { nested: { opt: stng_values[:text], t_opt: stng_values[:int], type_opt: stng_values[:int],
-                                    cstm_type_opt: stng_values[:int] } }.to_yaml
-        expect(configs.settings.to_yaml).to eq(expected_yaml)
+        expect(configs.settings.to_yaml).to eq(expected_structure.to_yaml)
       end
     end
 
@@ -94,6 +104,17 @@ RSpec.describe AceDeck do
             config none: val[:none], type: NilClass
           end
         end
+      end
+
+      let(:expected_structure) do
+        {
+          nested: {
+            one: stng_values[:one],
+            text: stng_values[:text],
+            float_point: stng_values[:float_point],
+            none: stng_values[:none]
+          }
+        }
       end
 
       it "has #one configuration parameter" do
@@ -118,21 +139,15 @@ RSpec.describe AceDeck do
       end
 
       it "converts the configuration tree to a hash" do
-        expected_hash = { nested: { one: stng_values[:one], text: stng_values[:text],
-                                    float_point: stng_values[:float_point], none: stng_values[:none] } }
-        expect(configs.settings.to_h).to eq(expected_hash)
+        expect(configs.settings.to_h).to eq(expected_structure)
       end
 
       it "converts the configuration tree to JSON" do
-        expected_json = { nested: { one: stng_values[:one], text: stng_values[:text],
-                                    float_point: stng_values[:float_point], none: stng_values[:none] } }.to_json
-        expect(configs.settings.to_json).to eq(expected_json)
+        expect(configs.settings.to_json).to eq(expected_structure.to_json)
       end
 
       it "converts the configuration tree to YAML" do
-        expected_yaml = { nested: { one: stng_values[:one], text: stng_values[:text],
-                                    float_point: stng_values[:float_point], none: stng_values[:none] } }.to_yaml
-        expect(configs.settings.to_yaml).to eq(expected_yaml)
+        expect(configs.settings.to_yaml).to eq(expected_structure.to_yaml)
       end
     end
   end

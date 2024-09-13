@@ -8,6 +8,8 @@
 
 **ace-config** offers various built-in types like basic types, data structures, numeric types, and time types.
 
+**ace-config** supports infinite nested configurations and 'classy' access providing a flexible and powerful configuration management solution.
+
 ## Installation
 
 Install the gem and add to the application's Gemfile by executing:
@@ -35,11 +37,19 @@ MyApp.configure :settings do
   config option: 42
   config.int typed_opt_one: 42
   config typed_opt_two: 4.2, type: :float  
+  configure :nested do
+    config opt: 42
+    configure :deep_nested do
+      config opt: 42
+    end
+  end
 end
 
-MyApp.settings.option               # => 42
-MyApp.settings.typed_opt_one        # => 42
-MyApp.settings.typed_opt_two        # => 4.2
+MyApp.settings.option                 # => 42
+MyApp.settings.typed_opt_one          # => 42
+MyApp.settings.typed_opt_two          # => 4.2
+MyApp.settings.nested.opt             # => 42
+MyApp.settings.nested.deep_nested.opt # => 42
 ```
 
 ### Type validation
@@ -66,15 +76,21 @@ MyGem.configure :settings do
   config :option
   config.int :typed_opt_one
   config :typed_opt_two, type: Integer
+  configure :nested do
+    config :option
+  end
 end
 ```
 
 ### Set configurations
 ```ruby
 MyGem.settings do 
-  config.option: 1
-  config.typed_opt_one: 1
-  config.typed_opt_two: 1 
+  config option: 1
+  config typed_opt_one: 1
+  config typed_opt_two: 1 
+  config.nested do 
+    config option: 1
+  end
 end
 ```
 
