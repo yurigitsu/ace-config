@@ -1,7 +1,5 @@
 # ace-config
 
-
-
 **ace-config** is a Ruby gem created to simplify managing application configurations and enhance the development of other gems that require configuration management. It offers a simple interface for defining, setting, and retrieving configuration options with type validation, helping ensure configurations are correct and reliable.
 
 **ace-config** provides built-in support for importing and exporting configurations in JSON, YAML, and Hash formats, enhancing versatility. 
@@ -13,23 +11,25 @@
 ## Table of Contents
 - [Installation](#installation)
 - [Basic Usage](#basic-usage)
-- [Gem Configurations Usage](#gem-configurations-usage)
+- [Namespacing](#namespacing)
+- [Configuration Container Usage](#configuration-container-usage)
 - [Typing](#typing)
   - [Set Configuration Validation](#set-configuration-type-validation)
   - [Declaring Validation](#configure-type-validation)
+  - [Type Schema](#type_schema)
   - [Built-in Types](#built-in-types)
 - [Loading Configuration Data](#loading-configuration-data)
   - [Loading from a JSON String](#loading-from-a-json-string)
   - [Loading from a YAML File](#loading-from-a-yaml-file)
 - [Exporting Configuration Data](#exporting-configuration-data)
-  - [to_h](#to-h)
-  - [to_json](#to-json)
-  - [to_yaml](#to-yaml)
-- [Development](#development)
-- [Contributing](#contributing)
-- [License](#license)
-- [Code of Conduct](#code-of-conduct)
-
+  - [to_h](#to_h)
+  - [to_json](#to_json)
+  - [to_yaml](#to_yaml)
+- [OSS](#oss)
+  - [Development](#development)
+  - [Contributing](#contributing)
+  - [License](#license)
+  - [Code of Conduct](#code-of-conduct)
 
 ## Installation
 
@@ -73,6 +73,34 @@ MyApp.settings.nested.opt             # => 42
 MyApp.settings.nested.deep_nested.opt # => 42
 ```
 
+## Namespacing
+```ruby
+MyApp.configure :app do
+  configure :lvl_one do
+    config opt: 100
+    configure :lvl_two do
+      config opt: 200
+      configure :lvl_three do
+        config opt: 300
+        configure :lvl_four do
+          config opt: 400
+          configure :lvl_five do
+            config opt: 500
+            # NOTE: as deep as you want
+          end
+        end
+      end
+    end
+  end
+end
+
+MyApp.app.lvl_one.opt                                     # => 100
+MyApp.app.lvl_one.lvl_two.opt                             # => 200
+MyApp.app.lvl_one.lvl_two.lvl_three.opt                   # => 300
+MyApp.app.lvl_one.lvl_two.lvl_three.lvl_four.opt          # => 400
+MyApp.app.lvl_one.lvl_two.lvl_three.lvl_four.lvl_five.opt # => 500
+```
+
 ### Configure Type Validation
 ```ruby
 MyApp.configure :settings do
@@ -81,7 +109,7 @@ end
 # => AceConfig::SettingTypeError
 ```
 
-## Gem Configurations Usage
+## Configuration Container Usage
 
 ```ruby
 require 'ace_config'
@@ -175,6 +203,17 @@ MyGem.configure :settings, yaml: 'config/settings.yml'
 ## Exporting Configuration Data
 
 You can dump the configuration data in various formats using the following methods:
+
+### type_schema
+```ruby
+MyGem.configure :settings do
+  config.int opt_one: 1
+  config.str opt_two: "2"
+end
+
+MyGem.settings.type_schema # => {:opt_one=>:int, :opt_two=>:str}
+```
+
 
 ### to_h
 ```ruby
