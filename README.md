@@ -13,8 +13,9 @@
 ## Table of Contents
 - [Installation](#installation)
 - [Basic Usage](#basic-usage)
-- [Type validation](#type-validation)
+- [Typing: Configure Validation](#configure-type-validation)
 - [Gem Configurations Usage](#gem-configurations-usage)
+- [Typing: Set Configuration Validation](#set-configuration-type-validation)
 - [Loading Configuration Data](#loading-configuration-data)
 - [Exporting Configuration Data](#exporting-configuration-data)
 - [Built-in Types](#built-in-types)
@@ -66,7 +67,7 @@ MyApp.settings.nested.opt             # => 42
 MyApp.settings.nested.deep_nested.opt # => 42
 ```
 
-### Type validation
+### Configure Type Validation
 ```ruby
 MyApp.configure :settings do
   config custom_typed_opt_one: '42', type: :float
@@ -117,7 +118,7 @@ MyGem.settings.typed_opt_one # => 1
 MyGem.settings.typed_opt_two # => 1
 ```
 
-### Type validation
+### Set Configuration Type Validation
 ```ruby
 MyGem.settings do 
   config.typed_opt_two: '1'
