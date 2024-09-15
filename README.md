@@ -57,7 +57,7 @@ MyApp.settings.nested.deep_nested.opt # => 42
 MyApp.configure :settings do
   config custom_typed_opt_one: '42', type: :float
 end
-# => AceConfigErr::SettingTypeError
+# => AceConfig::SettingTypeError
 ```
 
 ## Gem Configurations Usage
@@ -107,8 +107,8 @@ MyGem.settings.typed_opt_two # => 1
 ```ruby
 MyGem.settings do 
   config.typed_opt_two: '1'
-end
-# => AceConfigErr::SettingTypeError
+end 
+# => AceConfig::SettingTypeError
 ```
 
 ### to_h

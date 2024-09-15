@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe Setting do
+RSpec.describe AceConfig::Setting do
   let(:setting) { described_class.new }
 
   describe "#initialize" do
@@ -43,7 +43,7 @@ RSpec.describe Setting do
 
   describe "#config" do
     it "raises an error for invalid type" do
-      expect { setting.config(key: "value", type: :int) }.to raise_error(AceConfigErr::SettingTypeError)
+      expect { setting.config(key: "value", type: :int) }.to raise_error(AceConfig::SettingTypeError)
     end
 
     it "stores valid configuration" do

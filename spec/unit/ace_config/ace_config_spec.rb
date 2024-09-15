@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 require "spec_helper"
-require "tempfile"
 
-RSpec.describe AceDeck do
+RSpec.describe AceConfig do
   describe "#configure" do
-    let(:dummy_module) { Module.new { extend AceDeck } }
+    let(:dummy_module) { Module.new { extend AceConfig } }
 
     context "when using a block" do
       it "configures settings correctly" do
@@ -54,6 +53,26 @@ RSpec.describe AceDeck do
           expect(dummy_module.app_config.username).to eq("admin")
           expect(dummy_module.app_config.max_connections).to eq(10)
         end
+      end
+    end
+
+    context "when loading from invalid formats" do
+      it "raises LoadDataError for invalid JSON format" do
+        expect do
+          dummy_module.configure(:app_config, json: "{invalid_json}")
+        end.to raise_error(AceConfig::LoadDataError, "Invalid JSON format")
+      end
+
+      it "raises LoadDataError for non-existent YAML file" do
+        expect do
+          dummy_module.configure(:app_config, yaml: "non_existent.yml")
+        end.to raise_error(AceConfig::LoadDataError, "YAML file not found")
+      end
+
+      it "raises LoadDataError for empty options" do
+        expect do
+          dummy_module.configure(:app_config, file: "non_supported.txt")
+        end.to raise_error(AceConfig::LoadDataError, "Invalid load source type")
       end
     end
 

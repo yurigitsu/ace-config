@@ -1,14 +1,15 @@
 # frozen_string_literal: true
 
-module AceConfigErr
+# AceConfig module provides functionality for managing AceConfig features.
+module AceConfig
   # Custom error raised when a setting type does not match the expected type.
   #
-  # @example Raising an AceConfigErr::SettingTypeError
-  #   raise AceConfigErr::SettingTypeError.new(:int, "string")
-  #   # => raises AceConfigErr::SettingTypeError with message
+  # @example Raising an SettingTypeError
+  #   raise SettingTypeError.new(:int, "string")
+  #   # => raises SettingTypeError with message
   #   # "Expected: <int>. Given: \"string\" which is <String> class."
   class SettingTypeError < TypeError
-    # Initializes a new AceConfigErr::SettingTypeError.
+    # Initializes a new SettingTypeError.
     #
     # @param type [Symbol] The expected type.
     # @param val [Object] The value that was provided.
@@ -28,11 +29,11 @@ module AceConfigErr
 
   # Custom error raised when a type definition is missing.
   #
-  # @example Raising an AceConfigErr::TypeCheckerError
-  #   raise AceConfigErr::TypeCheckerError.new(:unknown_type)
-  #   # => raises AceConfigErr::TypeCheckerError with message "No type Definition for: <unknown_type> type"
+  # @example Raising a TypeCheckerError
+  #   raise TypeCheckerError.new(:unknown_type)
+  #   # => raises TypeCheckerError with message "No type Definition for: <unknown_type> type"
   class TypeCheckerError < StandardError
-    # Initializes a new AceConfigErr::TypeCheckerError.
+    # Initializes a new TypeCheckerError.
     #
     # @param type [Symbol] The type that is missing a definition.
     def initialize(type)
