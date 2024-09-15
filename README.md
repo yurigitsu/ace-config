@@ -111,21 +111,6 @@ end
 # => AceConfig::SettingTypeError
 ```
 
-### to_h
-```ruby
-MyGem.settings.to_h # => { option: 1, typed_opt_one: 1, typed_opt_two: 1 }
-```
-
-### to_json
-```ruby
-MyGem.settings.to_json # => "{\"option\":1,\"typed_opt_one\":1,\"typed_opt_two\":1}"
-```
-
-### to_yaml
-```ruby
-MyGem.settings.to_yaml # => "---\noption: 1\ntyped_opt_one: 1\ntyped_opt_two: 1\n"
-``` 
-
 ## Loading Configuration Data
 
 The `AceConfig` module allows you to load configuration data from various sources, including YAML and JSON. Below are the details for each option.
@@ -144,8 +129,8 @@ You can load configuration data from a JSON string by passing the `json` option 
 
 #### Example
 ```ruby
-MyGem.configure(:settings, json: '{"option":1,"typed_opt_one":1,"typed_opt_two":2}')
-# => #<MyGem::Setting:0x00007f8c1c0b2a80 @options={:option=>1, :typed_opt_one=>1, :typed_opt_two=>1}>
+MyGem.configure(:settings, json: '{"opt_one":1,"opt_two":2}')
+# => #<MyGem::Setting:0x00007f8c1c0b2a80 @options={:opt_one=>1, :opt_two=>2}>
 ```
 
 ### Loading from a YAML File
@@ -163,10 +148,42 @@ You can also load configuration data from a YAML file by passing the `yaml` opti
 #### Example
 ```ruby
 MyGem.configure :settings, yaml: 'config/settings.yml' 
-# => #<MyGem::Setting:0x00006f8c1c0b2a80 @options={:option=>1, :typed_opt_one=>1, :typed_opt_two=>2}>
+# => #<MyGem::Setting:0x00006f8c1c0b2a80 @options={:opt_one=>1, :opt_two=>2}>
 ```
 
+## Exporting Configuration Data
 
+You can dump the configuration data in various formats using the following methods:
+
+### to_h
+```ruby
+MyGem.configure :settings do
+  config opt_one: 1
+  config opt_two: 2
+end
+
+MyGem.settings.to_json # => '{"opt_one":1,"opt_two":2}'
+```
+
+### to_json
+```ruby
+MyGem.configure :settings do
+  config opt_one: 1
+  config opt_two: 2
+end
+
+MyGem.settings.to_json # => '{"opt_one":1,"opt_two":2}'
+```
+
+### to_yaml
+```ruby
+MyGem.configure :settings do
+  config opt_one: 1
+  config opt_two: 2
+end
+
+MyGem.settings.to_yaml # => "---\nopt_one: 1\nopt_two: 2\n"
+``` 
 
 
 ## Built-in Types
