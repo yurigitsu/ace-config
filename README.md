@@ -1,7 +1,5 @@
 # ace-config
 
-
-
 **ace-config** is a Ruby gem created to simplify managing application configurations and enhance the development of other gems that require configuration management. It offers a simple interface for defining, setting, and retrieving configuration options with type validation, helping ensure configurations are correct and reliable.
 
 **ace-config** provides built-in support for importing and exporting configurations in JSON, YAML, and Hash formats, enhancing versatility. 
@@ -13,23 +11,24 @@
 ## Table of Contents
 - [Installation](#installation)
 - [Basic Usage](#basic-usage)
-- [Gem Configurations Usage](#gem-configurations-usage)
+- [Configuration Container Usage](#configuration-container-usage)
 - [Typing](#typing)
   - [Set Configuration Validation](#set-configuration-type-validation)
   - [Declaring Validation](#configure-type-validation)
+  - [Type Schema](#type_schema)
   - [Built-in Types](#built-in-types)
 - [Loading Configuration Data](#loading-configuration-data)
   - [Loading from a JSON String](#loading-from-a-json-string)
   - [Loading from a YAML File](#loading-from-a-yaml-file)
 - [Exporting Configuration Data](#exporting-configuration-data)
-  - [to_h](#to-h)
-  - [to_json](#to-json)
-  - [to_yaml](#to-yaml)
-- [Development](#development)
-- [Contributing](#contributing)
-- [License](#license)
-- [Code of Conduct](#code-of-conduct)
-
+  - [to_h](#to_h)
+  - [to_json](#to_json)
+  - [to_yaml](#to_yaml)
+- [OSS](#oss)
+  - [Development](#development)
+  - [Contributing](#contributing)
+  - [License](#license)
+  - [Code of Conduct](#code-of-conduct)
 
 ## Installation
 
@@ -81,7 +80,7 @@ end
 # => AceConfig::SettingTypeError
 ```
 
-## Gem Configurations Usage
+## Configuration Container Usage
 
 ```ruby
 require 'ace_config'
@@ -175,6 +174,17 @@ MyGem.configure :settings, yaml: 'config/settings.yml'
 ## Exporting Configuration Data
 
 You can dump the configuration data in various formats using the following methods:
+
+### type_schema
+```ruby
+MyGem.configure :settings do
+  config.int opt_one: 1
+  config.str opt_two: "2"
+end
+
+MyGem.settings.type_schema # => {:opt_one=>:int, :opt_two=>:str}
+```
+
 
 ### to_h
 ```ruby
