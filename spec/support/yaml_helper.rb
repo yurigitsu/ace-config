@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require "tempfile"
+
+# YamlHelper module provides utility methods for handling YAML files in tests.
 module YamlHelper
   # Creates a temporary YAML file with predefined content and yields the file to a block.
   #

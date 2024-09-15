@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe TypeMap do
+RSpec.describe AceConfig::TypeMap do
   describe ".get" do
     it { expect(described_class.get(:int)).to eq(Integer) }
     it { expect(described_class.get(:str)).to eq(String) }
@@ -41,19 +41,19 @@ RSpec.describe TypeMap do
 
     describe "TYPE_MAP constant" do
       it "contains the expected keys" do
-        expect(TypeMap::TYPE_MAP.keys).to match_array(base_types + composite_types.keys)
+        expect(AceConfig::TypeMap::TYPE_MAP.keys).to match_array(base_types + composite_types.keys)
       end
 
       it "maps numeric composite type correctly" do
-        expect(TypeMap::TYPE_MAP[:numeric]).to eq(composite_types[:numeric])
+        expect(AceConfig::TypeMap::TYPE_MAP[:numeric]).to eq(composite_types[:numeric])
       end
 
       it "maps kernel_num composite type correctly" do
-        expect(TypeMap::TYPE_MAP[:kernel_num]).to eq(composite_types[:kernel_num])
+        expect(AceConfig::TypeMap::TYPE_MAP[:kernel_num]).to eq(composite_types[:kernel_num])
       end
 
       it "maps chrono composite type correctly" do
-        expect(TypeMap::TYPE_MAP[:chrono]).to eq(composite_types[:chrono])
+        expect(AceConfig::TypeMap::TYPE_MAP[:chrono]).to eq(composite_types[:chrono])
       end
     end
   end

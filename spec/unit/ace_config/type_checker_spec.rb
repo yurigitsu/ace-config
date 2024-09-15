@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe TypeChecker do
+RSpec.describe AceConfig::TypeChecker do
   let(:cstm_stub) { Class.new }
 
   describe ".call" do
@@ -11,7 +11,7 @@ RSpec.describe TypeChecker do
     end
 
     it "raises an error for nonexistent types" do
-      expect { described_class.call(1, type: :unsupported) }.to raise_error(AceConfigErr::TypeCheckerError)
+      expect { described_class.call(1, type: :unsupported) }.to raise_error(AceConfig::TypeCheckerError)
     end
   end
 
@@ -35,7 +35,7 @@ RSpec.describe TypeChecker do
     end
 
     it "raises an error for nonexistent types" do
-      expect { described_class.base_type(1, :nonexistent) }.to raise_error(AceConfigErr::TypeCheckerError)
+      expect { described_class.base_type(1, :nonexistent) }.to raise_error(AceConfig::TypeCheckerError)
     end
 
     it "handles nil values" do
@@ -77,7 +77,7 @@ RSpec.describe TypeChecker do
     end
 
     it "raises an error for nonexistent types" do
-      expect { described_class.fetch_type(:nonexistent) }.to raise_error(AceConfigErr::TypeCheckerError)
+      expect { described_class.fetch_type(:nonexistent) }.to raise_error(AceConfig::TypeCheckerError)
     end
   end
 end

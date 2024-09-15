@@ -2,8 +2,8 @@
 
 require "spec_helper"
 
-RSpec.describe AceDeck do
-  let(:dummy_module) { Module.new { extend AceDeck } }
+RSpec.describe AceConfig do
+  let(:dummy_module) { Module.new { extend AceConfig } }
   let(:stng_values) do
     {
       one: 1,
@@ -30,17 +30,17 @@ RSpec.describe AceDeck do
       end
 
       it "has #type_opt config param" do
-        expect { configs.settings.config(t_opt: stng_values[:text]) }.to raise_error(AceConfigErr::SettingTypeError)
+        expect { configs.settings.config(t_opt: stng_values[:text]) }.to raise_error(AceConfig::SettingTypeError)
       end
 
       it "has #t_opt config param" do
-        expect { configs.settings.config(type_opt: stng_values[:text]) }.to raise_error(AceConfigErr::SettingTypeError)
+        expect { configs.settings.config(type_opt: stng_values[:text]) }.to raise_error(AceConfig::SettingTypeError)
       end
 
       it "has #ctm_t_type_opt config param" do
         expect do
           configs.settings.config(cstm_type_opt: stng_values[:text])
-        end.to raise_error(AceConfigErr::SettingTypeError)
+        end.to raise_error(AceConfig::SettingTypeError)
       end
     end
 

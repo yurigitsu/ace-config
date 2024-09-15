@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-# AceDeck module provides functionality for managing AceDeck features.
-module AceDeck
+# AceConfig module provides functionality for managing AceConfig features.
+module AceConfig
   # Creates a class-level method for the configuration tree.
   #
   # This method allows you to define a configuration tree using a block
@@ -29,7 +29,7 @@ module AceDeck
   # @example Loading from a YAML file
   #   configure :app_config, yaml: 'config/settings.yml'
   def configure(config_tree_name, opts = {}, &block)
-    settings = block ? Setting.new(&block) : Setting.new
+    settings = block ? AceConfig::Setting.new(&block) : AceConfig::Setting.new
 
     load_configs = load_data(opts) unless opts.empty?
     settings.load_from_hash(load_configs) if load_configs
@@ -65,8 +65,12 @@ module AceDeck
     data = opts[:hash] if opts[:hash]
     data = JSON.parse(opts[:json]) if opts[:json]
     data = YAML.load_file(opts[:yaml]) if opts[:yaml]
-    raise AceConfigException::LoadDataError, "Invalid load source type" unless data
+    raise AceConfig::LoadDataError, "Invalid load source type" unless data
 
     data
+  rescue JSON::ParserError
+    raise AceConfig::LoadDataError, "Invalid JSON format"
+  rescue Errno::ENOENT
+    raise AceConfig::LoadDataError, "YAML file not found"
   end
 end
