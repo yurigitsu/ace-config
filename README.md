@@ -11,6 +11,7 @@
 ## Table of Contents
 - [Installation](#installation)
 - [Basic Usage](#basic-usage)
+- [Namespacing](#namespacing)
 - [Configuration Container Usage](#configuration-container-usage)
 - [Typing](#typing)
   - [Set Configuration Validation](#set-configuration-type-validation)
@@ -70,6 +71,34 @@ MyApp.settings.typed_opt_one          # => 42
 MyApp.settings.typed_opt_two          # => 4.2
 MyApp.settings.nested.opt             # => 42
 MyApp.settings.nested.deep_nested.opt # => 42
+```
+
+## Namespacing
+```ruby
+MyApp.configure :app do
+  configure :lvl_one do
+    config opt: 100
+    configure :lvl_two do
+      config opt: 200
+      configure :lvl_three do
+        config opt: 300
+        configure :lvl_four do
+          config opt: 400
+          configure :lvl_five do
+            config opt: 500
+            # NOTE: as deep as you want
+          end
+        end
+      end
+    end
+  end
+end
+
+MyApp.app.lvl_one.opt                                     # => 100
+MyApp.app.lvl_one.lvl_two.opt                             # => 200
+MyApp.app.lvl_one.lvl_two.lvl_three.opt                   # => 300
+MyApp.app.lvl_one.lvl_two.lvl_three.lvl_four.opt          # => 400
+MyApp.app.lvl_one.lvl_two.lvl_three.lvl_four.lvl_five.opt # => 500
 ```
 
 ### Configure Type Validation
