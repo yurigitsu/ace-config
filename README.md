@@ -10,6 +10,20 @@
 
 **ace-config** supports infinite nested configurations and 'classy' access providing a flexible and powerful configuration management solution.
 
+## Table of Contents
+- [Installation](#installation)
+- [Basic Usage](#basic-usage)
+- [Type validation](#type-validation)
+- [Gem Configurations Usage](#gem-configurations-usage)
+- [Loading Configuration Data](#loading-configuration-data)
+- [Exporting Configuration Data](#exporting-configuration-data)
+- [Built-in Types](#built-in-types)
+- [Development](#development)
+- [Contributing](#contributing)
+- [License](#license)
+- [Code of Conduct](#code-of-conduct)
+
+
 ## Installation
 
 Install the gem and add to the application's Gemfile by executing:
