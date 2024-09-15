@@ -10,6 +10,27 @@
 
 **ace-config** supports infinite nested configurations and 'classy' access providing a flexible and powerful configuration management solution.
 
+## Table of Contents
+- [Installation](#installation)
+- [Basic Usage](#basic-usage)
+- [Gem Configurations Usage](#gem-configurations-usage)
+- [Typing](#typing)
+  - [Set Configuration Validation](#set-configuration-type-validation)
+  - [Declaring Validation](#configure-type-validation)
+  - [Built-in Types](#built-in-types)
+- [Loading Configuration Data](#loading-configuration-data)
+  - [Loading from a JSON String](#loading-from-a-json-string)
+  - [Loading from a YAML File](#loading-from-a-yaml-file)
+- [Exporting Configuration Data](#exporting-configuration-data)
+  - [to_h](#to-h)
+  - [to_json](#to-json)
+  - [to_yaml](#to-yaml)
+- [Development](#development)
+- [Contributing](#contributing)
+- [License](#license)
+- [Code of Conduct](#code-of-conduct)
+
+
 ## Installation
 
 Install the gem and add to the application's Gemfile by executing:
@@ -30,7 +51,7 @@ gem install ace-config
 require 'ace_config'
 
 module MyApp
-  extend AceDeck
+  extend AceConfig
 end 
 
 MyApp.configure :settings do
@@ -52,7 +73,7 @@ MyApp.settings.nested.opt             # => 42
 MyApp.settings.nested.deep_nested.opt # => 42
 ```
 
-### Type validation
+### Configure Type Validation
 ```ruby
 MyApp.configure :settings do
   config custom_typed_opt_one: '42', type: :float
@@ -66,7 +87,7 @@ end
 require 'ace_config'
 
 module MyGem
-  extend AceDeck
+  extend AceConfig
 end 
 ```
 
@@ -103,7 +124,7 @@ MyGem.settings.typed_opt_one # => 1
 MyGem.settings.typed_opt_two # => 1
 ```
 
-### Type validation
+### Set Configuration Type Validation
 ```ruby
 MyGem.settings do 
   config.typed_opt_two: '1'
@@ -111,20 +132,80 @@ end
 # => AceConfig::SettingTypeError
 ```
 
+## Loading Configuration Data
+
+The `AceConfig` module allows you to load configuration data from various sources, including YAML and JSON. Below are the details for each option.
+
+### Loading from a JSON String
+
+You can load configuration data from a JSON string by passing the `json` option to the `configure` method.
+
+#### Parameters
+
+- `json` (String): A JSON string containing the configuration data.
+
+#### Error Handling
+
+- If the JSON format is invalid, a `LoadDataError` will be raised with the message "Invalid JSON format".
+
+#### Example
+```ruby
+MyGem.configure(:settings, json: '{"opt_one":1,"opt_two":2}')
+# => #<MyGem::Setting:0x00007f8c1c0b2a80 @options={:opt_one=>1, :opt_two=>2}>
+```
+
+### Loading from a YAML File
+
+You can also load configuration data from a YAML file by passing the `yaml` option to the `configure` method.
+
+#### Parameters
+
+- `yaml` (String): A file path to a YAML file containing the configuration data.
+
+#### Error Handling
+
+- If the specified YAML file is not found, a `LoadDataError` will be raised with the message "YAML file not found".
+
+#### Example
+```ruby
+MyGem.configure :settings, yaml: 'config/settings.yml' 
+# => #<MyGem::Setting:0x00006f8c1c0b2a80 @options={:opt_one=>1, :opt_two=>2}>
+```
+
+## Exporting Configuration Data
+
+You can dump the configuration data in various formats using the following methods:
+
 ### to_h
 ```ruby
-MyGem.settings.to_h # => { option: 1, typed_opt_one: 1, typed_opt_two: 1 }
+MyGem.configure :settings do
+  config opt_one: 1
+  config opt_two: 2
+end
+
+MyGem.settings.to_json # => '{"opt_one":1,"opt_two":2}'
 ```
 
 ### to_json
 ```ruby
-MyGem.settings.to_json # => "{\"option\":1,\"typed_opt_one\":1,\"typed_opt_two\":1}"
+MyGem.configure :settings do
+  config opt_one: 1
+  config opt_two: 2
+end
+
+MyGem.settings.to_json # => '{"opt_one":1,"opt_two":2}'
 ```
 
 ### to_yaml
 ```ruby
-MyGem.settings.to_yaml # => "---\noption: 1\ntyped_opt_one: 1\ntyped_opt_two: 1\n"
+MyGem.configure :settings do
+  config opt_one: 1
+  config opt_two: 2
+end
+
+MyGem.settings.to_yaml # => "---\nopt_one: 1\nopt_two: 2\n"
 ``` 
+
 
 ## Built-in Types
 
