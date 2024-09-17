@@ -1,12 +1,23 @@
 # ace-config
 
-**ace-config** is a Ruby gem created to simplify managing application configurations and enhance the development of other gems that require configuration management. It offers a simple interface for defining, setting, and retrieving configuration options with type validation, helping ensure configurations are correct and reliable.
+Ruby gem created to simplify managing application configurations and enhance the development of other gems that require configuration management. It offers a simple interface for defining, setting, and retrieving configuration options with type validation, helping ensure configurations are correct and reliable.
 
-**ace-config** provides built-in support for importing and exporting configurations in JSON, YAML, and Hash formats, enhancing versatility. 
+- **ace-config** provides built-in support for importing and exporting configurations in JSON, YAML, and Hash formats, enhancing versatility. 
 
-**ace-config** offers various built-in types like basic types, data structures, numeric types, and time types.
+- **ace-config** offers various built-in types like basic types, data structures, numeric types, and time types.
 
-**ace-config** supports infinite nested configurations and 'classy' access providing a flexible and powerful configuration management solution.
+- **ace-config** supports infinite nested configurations and 'classy' access providing a flexible and powerful configuration management solution.
+
+
+## Features
+
+- **Simple Configuration Management**: Easily define, set, and retrieve configuration options.
+- **Type Validation**: Ensure configurations are correct with built-in type validation.
+- **Multiple Formats**: Import and export configurations in JSON, YAML, and Hash formats.
+- **Nested Configurations**: Support for infinite nested configurations for complex applications.
+- **Classy Access**: Access configurations in a 'classy' manner for better organization and readability.
+- **Built-in Types**: Utilize various built-in types including basic types, data structures, numeric types, and time types.
+- **Extensible**: Easily extendable to accommodate custom configuration needs.
 
 ## Table of Contents
 - [Installation](#installation)
