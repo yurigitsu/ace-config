@@ -2,9 +2,9 @@
 
 require "spec_helper"
 
-RSpec.describe AceConfig do
+RSpec.describe AceConfig::Configuration do
   describe "#configure" do
-    let(:dummy_module) { Module.new { extend AceConfig } }
+    let(:dummy_module) { Module.new { extend AceConfig::Configuration } }
 
     context "when using a block" do
       it "configures settings correctly" do

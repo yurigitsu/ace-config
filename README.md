@@ -51,26 +51,18 @@ gem install ace-config
 require 'ace_config'
 
 module MyApp
-  extend AceConfig
+  extend AceConfig::Configuration
 end 
 
 MyApp.configure :settings do
   config option: 42
   config.int typed_opt_one: 42
   config typed_opt_two: 4.2, type: :float  
-  configure :nested do
-    config opt: 42
-    configure :deep_nested do
-      config opt: 42
-    end
-  end
 end
 
 MyApp.settings.option                 # => 42
 MyApp.settings.typed_opt_one          # => 42
 MyApp.settings.typed_opt_two          # => 4.2
-MyApp.settings.nested.opt             # => 42
-MyApp.settings.nested.deep_nested.opt # => 42
 ```
 
 ## Namespacing
@@ -115,7 +107,7 @@ end
 require 'ace_config'
 
 module MyGem
-  extend AceConfig
+  extend AceConfig::Configuration
 end 
 ```
 
