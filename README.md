@@ -24,19 +24,21 @@ Ruby gem created to simplify managing application configurations and enhance the
 - [Basic Usage](#basic-usage)
 - [Namespacing](#namespacing)
 - [Configuration Container Usage](#configuration-container-usage)
-- [Typing](#typing)
+- Typing
   - [Set Configuration Validation](#set-configuration-type-validation)
   - [Declaring Validation](#configure-type-validation)
   - [Type Schema](#type_schema)
   - [Built-in Types](#built-in-types)
-- [Loading Configuration Data](#loading-configuration-data)
+- Import:
+  - [Loading Configurations](#loading-configuration-data)
   - [Loading from a JSON String](#loading-from-a-json-string)
   - [Loading from a YAML File](#loading-from-a-yaml-file)
-- [Exporting Configuration Data](#exporting-configuration-data)
+Export:  
+  - [Exporting Configurations](#exporting-configuration-data)
   - [to_h](#to_h)
   - [to_json](#to_json)
   - [to_yaml](#to_yaml)
-- [OSS](#oss)
+- OSS
   - [Development](#development)
   - [Contributing](#contributing)
   - [License](#license)
