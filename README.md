@@ -33,7 +33,7 @@ Ruby gem created to simplify managing application configurations and enhance the
   - [Loading Configurations](#loading-configuration-data)
   - [Loading from a JSON String](#loading-from-a-json-string)
   - [Loading from a YAML File](#loading-from-a-yaml-file)
-Export:  
+- Export:  
   - [Exporting Configurations](#exporting-configuration-data)
   - [to_h](#to_h)
   - [to_json](#to_json)
