@@ -22,10 +22,10 @@ Ruby gem created to simplify managing application configurations and enhance the
 ## Table of Contents
 - [Installation](#installation)
 - [Basic Usage](#basic-usage)
-- [Namespacing](#namespacing)
 - [Configuration Container Usage](#configuration-container-usage)
+- [DSL Syntax](#dsl-syntax)
 - Typing
-  - [Set Configuration Validation](#set-configuration-type-validation)
+  - [Define Configuration Validation](#set-configuration-type-validation)
   - [Declaring Validation](#configure-type-validation)
   - [Type Schema](#type_schema)
   - [Built-in Types](#built-in-types)
@@ -76,6 +76,15 @@ end
 MyApp.settings.option                 # => 42
 MyApp.settings.typed_opt_one          # => 42
 MyApp.settings.typed_opt_two          # => 4.2
+```
+
+## DSL Syntax
+
+### Basic Syntax
+```ruby
+MyApp.configure :settings do
+  config option: 42
+end
 ```
 
 ## Namespacing
@@ -130,22 +139,35 @@ MyGem.configure :settings do
   config :option
   config.int :typed_opt_one
   config :typed_opt_two, type: Integer
-  # NOTE: declare nested namespace with <symbol arg>
+  # NOTE: declare nested namespace with configure <symbol arg>
   configure :nested do
     config :option
   end
 end
 ```
 
-### Set configurations
+### Define configurations
 ```ruby
 MyGem.settings do 
   config option: 1
-  config typed_opt_one: 1
-  config typed_opt_two: 1 
-  # NOTE: access namespace for set via <.dot_access> 
+  config typed_opt_one: 2
+  config typed_opt_two: 3 
+  # NOTE: access namespace via <.dot_access> 
   config.nested do 
-    config option: 1
+    config option: 4
+  end
+end
+```
+
+### Define DSL Syntax
+```ruby
+MyGem.settings do 
+  option 1
+  typed_opt_one 2
+  typed_opt_two 3 
+  # NOTE: access namespace via <block> 
+  nested do 
+    option 1
   end
 end
 ```
@@ -153,14 +175,20 @@ end
 ### Get configurations
 ```ruby
 MyGem.settings.option        # => 1
-MyGem.settings.typed_opt_one # => 1
-MyGem.settings.typed_opt_two # => 1
+MyGem.settings.typed_opt_one # => 2
+MyGem.settings.typed_opt_two # => 3
+MyGem.settings.nested.option # => 4
 ```
 
-### Set Configuration Type Validation
+### Define Configuration Type Validation
 ```ruby
 MyGem.settings do 
   config.typed_opt_two: '1'
+end 
+# => AceConfig::SettingTypeError
+
+MyGem.settings do 
+  typed_opt_two '1'
 end 
 # => AceConfig::SettingTypeError
 ```
@@ -250,11 +278,10 @@ end
 MyGem.settings.to_yaml # => "---\nopt_one: 1\nopt_two: 2\n"
 ``` 
 
-
 ## Built-in Types
 
+### Base Types
 ```ruby
-# Base Types
 :int  => Integer
 :str  => String
 :sym  => Symbol
@@ -262,8 +289,10 @@ MyGem.settings.to_yaml # => "---\nopt_one: 1\nopt_two: 2\n"
 :any  => Object
 :true_class  => TrueClass
 :false_class => FalseClass
+```
 
-# Data Structures
+### Data Structures
+```ruby 
 :hash  => Hash
 :array => Array
 ```
