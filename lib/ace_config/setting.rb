@@ -83,7 +83,7 @@ module AceConfig
     # @raise [SettingTypeError] if the value does not match the expected type.
     #
     # @example Configuring a setting
-    #   settings.config(:max_connections, type: :int, value: 10)
+    #   settings.config max_connections: 10, type: :int
     def config(setting = nil, type: nil, **opt)
       return self if !setting && opt.empty?
 
@@ -166,7 +166,13 @@ module AceConfig
     def create_new_node(node, &block)
       new_node = AceConfig::Setting.new(&block)
       config_tree[node] = new_node
+      define_node_methods(node)
+    end
 
+    # Defines singleton methods for the given node.
+    #
+    # @param node [Symbol] The name of the node to define methods for.
+    def define_node_methods(node)
       define_singleton_method(node) do |*_args, &node_block|
         if node_block
           config_tree[node].instance_eval(&node_block)
@@ -217,7 +223,15 @@ module AceConfig
     def set_configuration(stng_name, stng_val, stng_type)
       schema[stng_name] = stng_type
       config_tree[stng_name] = stng_val
-      define_singleton_method(stng_name) { config_tree[stng_name] }
+      return if respond_to?(stng_name)
+
+      define_singleton_method(stng_name) do |value = nil, type: nil|
+        if value
+          config(**{ stng_name => value, type: type })
+        else
+          config_tree[stng_name]
+        end
+      end
     end
   end
 end
