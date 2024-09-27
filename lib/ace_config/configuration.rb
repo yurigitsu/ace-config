@@ -2,6 +2,10 @@
 
 # AceConfig module provides functionality for managing AceConfig features.
 module AceConfig
+  def self.included(base)
+    base.extend(Configuration)
+  end
+
   # This module handles configuration trees and loading data from various sources.
   module Configuration
     # Creates a class-level method for the configuration tree.
@@ -36,12 +40,25 @@ module AceConfig
       load_configs = load_data(opts) unless opts.empty?
       settings.load_from_hash(load_configs) if load_configs
 
-      anonym_module = Module.new
-      anonym_module.define_method(config_tree_name) do |&tree_block|
+      define_singleton_method(config_tree_name) do |&tree_block|
         tree_block ? settings.instance_eval(&tree_block) : settings
       end
 
-      extend anonym_module
+      self
+    end
+
+    module Check
+      class A
+        include AceConfig
+
+        configure :a do
+          config b: 1
+        end
+      end
+
+      class B < A; end
+
+      # B.a { b 2 }
     end
 
     module_function

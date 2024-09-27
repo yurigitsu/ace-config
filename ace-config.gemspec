@@ -7,7 +7,7 @@ require "ace_config/version"
 
 Gem::Specification.new do |spec|
   spec.name    = "ace-config"
-  spec.version = AceConfig::VERSION
+  spec.version = "0.1.0.beta.rc1"
   spec.authors = ["yurigitsu"]
   spec.email   = ["yurigi.pro@gmail.com"]
   spec.license = "MIT"
