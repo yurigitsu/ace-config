@@ -47,20 +47,6 @@ module AceConfig
       self
     end
 
-    module Check
-      class A
-        include AceConfig
-
-        configure :a do
-          config b: 1
-        end
-      end
-
-      class B < A; end
-
-      # B.a { b 2 }
-    end
-
     module_function
 
     # Loads configuration data from various sources based on the provided options.
