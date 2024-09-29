@@ -24,6 +24,8 @@ RSpec.describe AceConfig do
           config :cstm_type_opt, type: Integer
         end
       end
+
+      dummy_module
     end
 
     describe "declared typed #config" do
@@ -70,6 +72,8 @@ RSpec.describe AceConfig do
           config type_opt: val[:int]
           config cstm_type_opt: val[:int]
         end
+
+        dummy_module
       end
 
       let(:expected_structure) do
@@ -115,6 +119,8 @@ RSpec.describe AceConfig do
             config none: val[:none], type: NilClass
           end
         end
+
+        dummy_module
       end
 
       let(:expected_structure) do

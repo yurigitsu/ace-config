@@ -22,6 +22,8 @@ RSpec.describe AceConfig do
         config :type_opt, type: :int
         config :cstm_type_opt, type: Integer
       end
+
+      dummy_module
     end
 
     describe "declared typed #config" do
@@ -97,6 +99,8 @@ RSpec.describe AceConfig do
           config float_point: val[:float_point], type: :float
           config none: val[:none], type: NilClass
         end
+
+        dummy_module
       end
 
       it "has #one config parameter" do

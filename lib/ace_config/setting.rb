@@ -50,13 +50,17 @@ module AceConfig
     # @raise [SettingTypeError] If a value doesn't match the specified type in the schema.
     #
     # @example Loading from a hash with type validation
-    #   settings.load_from_hash({ username: "admin", max_connections: 10 }, schema: { max_connections: :int })
+    #   settings.load_from_hash({ name: "admin", max_connections: 10 }, schema: { name: :str, max_connections: :int })
     def load_from_hash(data, schema: {})
       data.each do |key, value|
+        key = key.to_sym
+        type = schema[key] if schema
+
         if value.is_a?(Hash) || value.is_a?(Setting)
           configure(key) { load_from_hash(value, schema: schema[key]) }
         else
-          type = schema[key] if schema
+          validate_setting!(value, type) if type
+
           config(key => value, type: type)
         end
       end

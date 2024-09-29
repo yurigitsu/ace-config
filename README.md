@@ -78,8 +78,6 @@ MyApp.settings.typed_opt_one          # => 42
 MyApp.settings.typed_opt_two          # => 4.2
 ```
 
-## DSL Syntax
-
 ### Basic Syntax
 ```ruby
 MyApp.configure :settings do
@@ -159,7 +157,7 @@ MyGem.settings do
 end
 ```
 
-### Define DSL Syntax
+### Define with DSL Syntax
 ```ruby
 MyGem.settings do 
   option 1
@@ -197,6 +195,11 @@ end
 
 The `AceConfig` module allows you to load configuration data from various sources, including YAML and JSON. Below are the details for each option.
 
+- `json` (String)
+- `yaml` (String)
+- `hash` (Hash)
+- `schema` (Hash) (Optional) See: [Type Schema](#type_schema) and [Built-in Types](#built-in-types)
+
 ### Loading from a JSON String
 
 You can load configuration data from a JSON string by passing the `json` option to the `configure` method.
@@ -204,15 +207,33 @@ You can load configuration data from a JSON string by passing the `json` option 
 #### Parameters
 
 - `json` (String): A JSON string containing the configuration data.
+- `schema` (Hash) (Optional): A hash representing the type schema for the configuration data.
 
 #### Error Handling
 
 - If the JSON format is invalid, a `LoadDataError` will be raised with the message "Invalid JSON format".
 
-#### Example
+#### Example 1
 ```ruby
-MyGem.configure(:settings, json: '{"opt_one":1,"opt_two":2}')
+MyGem.configure(:settings, json: '{"opt_one":1,"opt_two":2}').settings
 # => #<MyGem::Setting:0x00007f8c1c0b2a80 @options={:opt_one=>1, :opt_two=>2}>
+```
+
+#### Example 2
+```ruby
+MyGem.configure(:settings, json: '{"opt_one":1,"opt_two":2}', schema: { opt_one: :int, opt_two: :str })
+# => AceConfig::SettingTypeError: Expected: <str>. Given: 2 which is <Integer> class.
+```
+
+#### Example 3
+```ruby
+MyGem.configure(:settings, json: '{"opt_one":1,"opt_two":2}', schema: { opt_one: :int, opt_two: :int })
+
+MyGem.settings do 
+  opt_one 1
+  opt_two "2"
+end
+# => AceConfig::SettingTypeError: Expected: <intstr>. Given: \"2\" which is <String> class.
 ```
 
 ### Loading from a YAML File
@@ -222,31 +243,46 @@ You can also load configuration data from a YAML file by passing the `yaml` opti
 #### Parameters
 
 - `yaml` (String): A file path to a YAML file containing the configuration data.
+- `schema` (Hash) (Optional): A hash representing the type schema for the configuration data.
 
 #### Error Handling
 
 - If the specified YAML file is not found, a `LoadDataError` will be raised with the message "YAML file not found".
 
-#### Example
+##### YAML File
+```yaml
+# settings.yml
+
+opt_one: 1
+opt_two: 2
+```
+
+#### Example 1
 ```ruby
-MyGem.configure :settings, yaml: 'config/settings.yml' 
+MyGem.configure :settings, yaml: 'settings.yml' 
 # => #<MyGem::Setting:0x00006f8c1c0b2a80 @options={:opt_one=>1, :opt_two=>2}>
+```
+
+#### Example 2
+```ruby
+MyGem.configure :settings, yaml: 'settings.yml', schema: { opt_one: :int, opt_two: :str }
+# => AceConfig::SettingTypeError: Expected: <str>. Given: 2 which is <Integer> class.
+```
+
+#### Example 3
+```ruby
+MyGem.configure :settings, yaml: 'settings.yml', schema: { opt_one: :int, opt_two: :int }
+
+MyGem.settings do 
+  opt_one 1
+  opt_two "2"
+end
+# => AceConfig::SettingTypeError: Expected: <intstr>. Given: \"2\" which is <String> class.
 ```
 
 ## Exporting Configuration Data
 
 You can dump the configuration data in various formats using the following methods:
-
-### type_schema
-```ruby
-MyGem.configure :settings do
-  config.int opt_one: 1
-  config.str opt_two: "2"
-end
-
-MyGem.settings.type_schema # => {:opt_one=>:int, :opt_two=>:str}
-```
-
 
 ### to_h
 ```ruby
@@ -277,6 +313,16 @@ end
 
 MyGem.settings.to_yaml # => "---\nopt_one: 1\nopt_two: 2\n"
 ``` 
+
+### type_schema
+```ruby
+MyGem.configure :settings do
+  config.int opt_one: 1
+  config.str opt_two: "2"
+end
+
+MyGem.settings.type_schema # => {:opt_one=>:int, :opt_two=>:str}
+```
 
 ## Built-in Types
 

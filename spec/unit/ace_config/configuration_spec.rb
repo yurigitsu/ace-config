@@ -28,6 +28,27 @@ RSpec.describe AceConfig::Configuration do
       end
     end
 
+    context "when loading from a hash with schema" do
+      let(:hash) { { username: "admin", max_connections: 10 } }
+      let(:schema) { { username: :str, max_connections: :int } }
+
+      it "loads settings from a hash with schema" do
+        dummy_module.configure :app_config, hash: hash, schema: schema
+
+        aggregate_failures do
+          expect(dummy_module.app_config.username).to eq("admin")
+          expect(dummy_module.app_config.max_connections).to eq(10)
+        end
+      end
+
+      it "raises SettingTypeError for invalid type" do
+        hash[:max_connections] = "10"
+
+        expect { dummy_module.configure(:app_config, hash: hash, schema: schema) }
+          .to raise_error(AceConfig::SettingTypeError)
+      end
+    end
+
     context "when loading from JSON" do
       let(:json_data) { { username: "admin", max_connections: 10 }.to_json }
 

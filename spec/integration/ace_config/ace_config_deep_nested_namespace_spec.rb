@@ -26,6 +26,8 @@ RSpec.describe AceConfig do
           end
         end
       end
+
+      dummy_module
     end
 
     describe "declared typed #config" do
@@ -110,6 +112,8 @@ RSpec.describe AceConfig do
             end
           end
         end
+
+        dummy_module
       end
 
       it "has #one config parameter" do

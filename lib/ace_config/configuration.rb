@@ -138,8 +138,6 @@ module AceConfig
       define_singleton_method(config_tree_name) do |&tree_block|
         tree_block ? settings.instance_eval(&tree_block) : settings
       end
-
-      self
     end
 
     module_function
