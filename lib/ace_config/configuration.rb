@@ -91,7 +91,10 @@ module AceConfig
         super
 
         @isolated_configs.each do |parent_config|
-          base.configure parent_config, hash: __send__(parent_config).to_h
+          hash = __send__(parent_config).to_h
+          schema = __send__(parent_config).type_schema
+
+          base.configure parent_config, hash: hash, schema: schema
         end
       end
     end
@@ -106,6 +109,7 @@ module AceConfig
     # @option opts [Hash] :hash A hash containing configuration data.
     # @option opts [String] :json A JSON string containing configuration data.
     # @option opts [String] :yaml A file path to a YAML file containing configuration data.
+    # @option opts [Hash] :schema A hash representing the type schema for the configuration.
     # @yield [Setting] A block that builds the configuration tree.
     #
     # @example Configuring with a block
@@ -122,11 +126,14 @@ module AceConfig
     #
     # @example Loading from a YAML file
     #   configure :app_config, yaml: 'config/settings.yml'
+    #
+    # @example Loading with a schema
+    #   configure :app_config, hash: { name: "admin", policy: "allow" }, schema: { name: :str, policy: :str }
     def configure(config_tree_name, opts = {}, &block)
       settings = block ? AceConfig::Setting.new(&block) : AceConfig::Setting.new
 
       load_configs = load_data(opts) unless opts.empty?
-      settings.load_from_hash(load_configs) if load_configs
+      settings.load_from_hash(load_configs, schema: opts[:schema]) if load_configs
 
       define_singleton_method(config_tree_name) do |&tree_block|
         tree_block ? settings.instance_eval(&tree_block) : settings

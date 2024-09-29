@@ -5,16 +5,16 @@ RSpec.describe AceConfig::Isolated do
     stub_const("BaseConfig", Class.new { include AceConfig::Isolated })
 
     BaseConfig.configure :app do
-      config param_a: 1
+      config param_a: 1, type: :int
       config.str param_b: "2"
 
       configure :nested do
-        config param_a: 1
+        config.int param_a: 1
         config.str param_b: "2"
 
         configure :deep_nested do
           config param_a: 1
-          config.str param_b: "2"
+          config param_b: "2", type: :str
         end
       end
     end
@@ -31,17 +31,21 @@ RSpec.describe AceConfig::Isolated do
     end
 
     it "modify child configuration without modify parent" do
-      InheritedConfig.app { param_b "nested_two" }
+      InheritedConfig.app { param_b "two" }
 
       aggregate_failures do
         expect(BaseConfig.app.param_a).to eq(1)
-        expect(InheritedConfig.app.param_b).to eq("nested_two")
+        expect(InheritedConfig.app.param_b).to eq("two")
       end
     end
 
-    xit "expect error when setting param_a to non-integer value" do
-      # Pending: param_a validation not yet implemented
-      expect { InheritedConfig.app { param_b 2 } }.to raise_error(AceConfig::SettingTypeError)
+    it "expect error when setting param_a to non-integer value" do
+      InheritedConfig.app { param_a "switched_type", type: :str }
+
+      aggregate_failures do
+        expect { InheritedConfig.app { param_a 1 } }.to raise_error(AceConfig::SettingTypeError)
+        expect { InheritedConfig.app { param_b 1 } }.to raise_error(AceConfig::SettingTypeError)
+      end
     end
   end
 
@@ -54,11 +58,20 @@ RSpec.describe AceConfig::Isolated do
     end
 
     it "modify deeply nested child configuration without modify parent" do
-      InheritedConfig.app.nested { param_b "deep_nested_two" }
+      InheritedConfig.app.nested { param_b "nested_two" }
 
       aggregate_failures do
         expect(BaseConfig.app.nested.param_a).to eq(1)
-        expect(InheritedConfig.app.nested.param_b).to eq("deep_nested_two")
+        expect(InheritedConfig.app.nested.param_b).to eq("nested_two")
+      end
+    end
+
+    it "expect error when setting param_a to non-integer value" do
+      InheritedConfig.app.nested { param_a "switched_type", type: :str }
+
+      aggregate_failures do
+        expect { InheritedConfig.app.nested { param_a 1 } }.to raise_error(AceConfig::SettingTypeError)
+        expect { InheritedConfig.app.nested { param_b 1 } }.to raise_error(AceConfig::SettingTypeError)
       end
     end
   end
@@ -72,11 +85,20 @@ RSpec.describe AceConfig::Isolated do
     end
 
     it "modify deeply nested child configuration without modify parent" do
-      InheritedConfig.app.nested.deep_nested { param_b "deep_nested_two" }
+      InheritedConfig.app.nested.deep_nested { param_b "deep_nested_two", type: :str }
 
       aggregate_failures do
         expect(BaseConfig.app.nested.deep_nested.param_a).to eq(1)
         expect(InheritedConfig.app.nested.deep_nested.param_b).to eq("deep_nested_two")
+      end
+    end
+
+    it "expect error when setting param_a to non-integer value" do
+      InheritedConfig.app.nested.deep_nested { param_a "switched_type", type: :str }
+
+      aggregate_failures do
+        expect { InheritedConfig.app.nested.deep_nested { param_a 1 } }.to raise_error(AceConfig::SettingTypeError)
+        expect { InheritedConfig.app.nested.deep_nested { param_b 1 } }.to raise_error(AceConfig::SettingTypeError)
       end
     end
   end
