@@ -1,13 +1,101 @@
 # frozen_string_literal: true
 
-# AceConfig module provides functionality for managing AceConfig features.
+# AceConfig module provides functionality for managing configuration features.
+#
+# @example Using AceConfig in a class
+#   class MyApp
+#     include AceConfig
+#
+#     configure :settings do
+#       config api_key: "default_key"
+#       config max_retries: 3
+#     end
+#   end
+#
+#   MyApp.settings.api_key # => "default_key"
+#   MyApp.settings.max_retries # => 3
 module AceConfig
+  # Extends the base class with Configuration module methods
   def self.included(base)
     base.extend(Configuration)
   end
 
+  # Isolated module handles isolated configurations.
+  #
+  # @example Using Isolated configurations
+  #   class ParentApp
+  #     include AceConfig::Isolated
+  #
+  #     configure :parent_settings do
+  #       config timeout: 30
+  #       config tries: 3
+  #     end
+  #   end
+  #
+  #   class ChildApp < ParentApp
+  #     parent_settings do
+  #       config tries: 4
+  #     end
+  #   end
+  #
+  #   ChildApp.parent_settings.timeout # => 30
+  #   ChildApp.parent_settings.tries # => 4
+  #   ParentApp.parent_settings.tries # => 3
+  module Isolated
+    # Extends the base class with Configuration and Configuration::Isolated module methods
+    def self.included(base)
+      base.extend(Configuration)
+      base.extend(Configuration::Isolated)
+    end
+  end
+
   # This module handles configuration trees and loading data from various sources.
   module Configuration
+    # Isolated module provides methods for handling isolated configurations.
+    module Isolated
+      # Configures an isolated config tree and tracks it
+      #
+      # @param config_tree_name [Symbol] The name of the configuration tree
+      # @param opts [Hash] Options for configuration
+      # @yield The configuration block
+      # @return [self]
+      #
+      # @example
+      #   configure :isolated_settings do
+      #     config api_url: "https://api.example.com"
+      #   end
+      #
+      #   # Example of accessing the configuration
+      #   puts MyApp.isolated_settings.api_url # => "https://api.example.com"
+      def configure(config_tree_name, opts = {}, &block)
+        super
+
+        @isolated_configs ||= []
+        @isolated_configs << config_tree_name
+
+        self
+      end
+
+      # Inherits isolated configurations to the base class
+      #
+      # @param base [Class] The inheriting class
+      #
+      # @example
+      #   class ChildClass < ParentClass
+      #     # Automatically inherits isolated configurations
+      #   end
+      #
+      #   # Example of accessing inherited configurations
+      #   puts ChildClass.parent_settings.timeout # => 30
+      def inherited(base)
+        super
+
+        @isolated_configs.each do |parent_config|
+          base.configure parent_config, hash: __send__(parent_config).to_h
+        end
+      end
+    end
+
     # Creates a class-level method for the configuration tree.
     #
     # This method allows you to define a configuration tree using a block

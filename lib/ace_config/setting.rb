@@ -5,7 +5,7 @@ require "json"
 
 # AceConfig module provides functionality for managing AceConfig features.
 module AceConfig
-  # Setting class. Provides configuration tree.
+  # Setting class provides a configuration tree structure for managing settings.
   #
   # This class allows for dynamic configuration management, enabling
   # the loading of settings from hashes, YAML, or JSON formats.
@@ -27,10 +27,6 @@ module AceConfig
     # Initializes a new Setting instance.
     #
     # @yield [self] Optional block to configure the instance upon creation.
-    # @example Initializing with a block
-    #   settings = Setting.new do
-    #     config(:username, value: "admin")
-    #   end
     def initialize(&block)
       @schema = {}
       @config_tree = {}
@@ -46,6 +42,8 @@ module AceConfig
     # @example Loading from a hash
     #   settings = Setting.new
     #   settings.load_from_hash({ username: "admin", password: "secret" })
+    #   puts settings.username # => "admin"
+    #   puts settings.password # => "secret"
     def load_from_hash(data)
       data.each do |key, value|
         if value.is_a?(Hash) || value.is_a?(Setting)
@@ -66,6 +64,8 @@ module AceConfig
     #     config(:host, value: "localhost")
     #     config(:port, value: 5432)
     #   end
+    #   puts settings.database.host # => "localhost"
+    #   puts settings.database.port # => 5432
     def configure(node, &block)
       if config_tree[node]
         config_tree[node].instance_eval(&block)
