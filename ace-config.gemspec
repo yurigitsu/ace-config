@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.license = "MIT"
 
   spec.summary     = "A flexible and easy-to-use configuration handling gem."
-  spec.description = "Managing configurations with type validation, configirations load and dumping support."
+  spec.description = "Managing, configurations with type validation, configirations load and export support."
   spec.homepage    = "https://github.com/yurigitsu/#{spec.name}"
 
   spec.required_ruby_version = ">= 3.0.0"
