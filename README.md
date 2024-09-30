@@ -23,10 +23,10 @@ Ruby gem created to simplify managing application configurations and enhance the
 - [Installation](#installation)
 - [Basic Usage](#basic-usage)
 - [Configuration Container Usage](#configuration-container-usage)
-- [DSL Syntax](#dsl-syntax)
+- [Define with DSL Syntax](#define-with-dsl-syntax)
 - Typing
-  - [Define Configuration Validation](#set-configuration-type-validation)
-  - [Declaring Validation](#configure-type-validation)
+  - [Configure Type Validation](#configure-type-validation)
+  - [Define Configuration Type Validation](#define-configuration-type-validation)
   - [Type Schema](#type_schema)
   - [Built-in Types](#built-in-types)
 - Import:

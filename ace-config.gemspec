@@ -7,7 +7,7 @@ require "ace_config/version"
 
 Gem::Specification.new do |spec|
   spec.name    = "ace-config"
-  spec.version = "0.1.0.beta.rc1"
+  spec.version = "0.1.0.beta.rc1c"
   spec.authors = ["yurigitsu"]
   spec.email   = ["yurigi.pro@gmail.com"]
   spec.license = "MIT"
@@ -33,5 +33,5 @@ Gem::Specification.new do |spec|
 
   spec.metadata["rubygems_mfa_required"] = "true"
 
-  spec.add_dependency "bigdecimal"
+  spec.add_dependency "bigdecimal", "~> 3.0"
 end
