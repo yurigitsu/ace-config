@@ -3,7 +3,7 @@
 require "spec_helper"
 
 RSpec.describe AceConfig do
-  let(:dummy_module) { Module.new { include AceConfig } }
+  let(:dummy_module) { Module.new { include AceConfiguration } }
   let(:stng_values) do
     {
       one: 1,

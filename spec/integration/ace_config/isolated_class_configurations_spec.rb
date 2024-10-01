@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-RSpec.describe AceConfig::Isolated do
+RSpec.describe "AceConfiguration::Isolated" do
   before do
-    stub_const("BaseConfig", Class.new { include AceConfig::Isolated })
+    stub_const("BaseConfig", Class.new { include AceConfiguration::Isolated })
 
     BaseConfig.configure :app do
       config param_a: 1, type: :int

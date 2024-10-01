@@ -1,54 +1,7 @@
 # frozen_string_literal: true
 
-# AceConfig module provides functionality for managing configuration features.
-#
-# @example Using AceConfig in a class
-#   class MyApp
-#     include AceConfig
-#
-#     configure :settings do
-#       config api_key: "default_key"
-#       config max_retries: 3
-#     end
-#   end
-#
-#   MyApp.settings.api_key # => "default_key"
-#   MyApp.settings.max_retries # => 3
+# AceConfig module provides functionality for managing AceConfig features.
 module AceConfig
-  # Extends the base class with Configuration module methods
-  def self.included(base)
-    base.extend(Configuration)
-  end
-
-  # Isolated module handles isolated configurations.
-  #
-  # @example Using Isolated configurations
-  #   class ParentApp
-  #     include AceConfig::Isolated
-  #
-  #     configure :parent_settings do
-  #       config timeout: 30
-  #       config tries: 3
-  #     end
-  #   end
-  #
-  #   class ChildApp < ParentApp
-  #     parent_settings do
-  #       config tries: 4
-  #     end
-  #   end
-  #
-  #   ChildApp.parent_settings.timeout # => 30
-  #   ChildApp.parent_settings.tries # => 4
-  #   ParentApp.parent_settings.tries # => 3
-  module Isolated
-    # Extends the base class with Configuration and Configuration::Isolated module methods
-    def self.included(base)
-      base.extend(Configuration)
-      base.extend(Configuration::Isolated)
-    end
-  end
-
   # This module handles configuration trees and loading data from various sources.
   module Configuration
     # Isolated module provides methods for handling isolated configurations.
