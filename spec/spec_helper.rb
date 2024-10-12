@@ -15,5 +15,6 @@ RSpec.configure do |config|
   end
 
   Dir[File.join("./spec/support/**/*.rb")].each { |f| require f }
-  config.include YamlHelper
+  config.include YamlFile
+  config.include Dummy
 end

@@ -2,8 +2,8 @@
 
 require "tempfile"
 
-# YamlHelper module provides utility methods for handling YAML files in tests.
-module YamlHelper
+# YamlFile module provides utility methods for handling YAML files in tests.
+module YamlFile
   # Creates a temporary YAML file with predefined content and yields the file to a block.
   #
   # This method generates a temporary file named "config.yml" containing a YAML representation
@@ -11,13 +11,14 @@ module YamlHelper
   # file as an argument for further processing.
   #
   # @yieldparam temp_file [Tempfile] The temporary file containing the YAML data.
+  # @yieldreturn [void] Returns nothing.
   #
-  # @example Using the yaml_helper_tempfile method
-  #   yaml_helper_tempfile do |file|
+  # @example Using the support_yaml_file_tempfile method
+  #   support_yaml_file_tempfile do |file|
   #     # Perform operations with the temporary YAML file
   #     puts file.read
   #   end
-  def yaml_helper_tempfile
+  def support_yaml_file_tempfile
     Tempfile.create(["config", ".yml"]) do |temp_file|
       temp_file.write({ username: "admin", max_connections: 10 }.to_yaml)
       temp_file.rewind

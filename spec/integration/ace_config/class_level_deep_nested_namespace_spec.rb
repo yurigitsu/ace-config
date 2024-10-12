@@ -2,8 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe AceConfig do
-  let(:dummy_module) { Module.new { include AceConfiguration } }
+RSpec.describe "ClassLevel::DeepNested::Namespace" do
   let(:stng_values) do
     {
       one: 1,
@@ -15,19 +14,19 @@ RSpec.describe AceConfig do
 
   context "when using a deep nested namespace" do
     let(:configs) do
-      dummy_module.configure :settings do
-        configure :nested do
-          configure :deep_nested do
-            config :opt
-            config.str :dsl_opt
-            config.int :t_opt
-            config :type_opt, type: :int
-            config :cstm_type_opt, type: Integer
+      support_dummy_module.tap do |dummy_module|
+        dummy_module.configure :settings do
+          configure :nested do
+            configure :deep_nested do
+              config :opt
+              config.str :dsl_opt
+              config.int :t_opt
+              config :type_opt, type: :int
+              config :cstm_type_opt, type: Integer
+            end
           end
         end
       end
-
-      dummy_module
     end
 
     describe "declared typed #config" do
@@ -102,18 +101,18 @@ RSpec.describe AceConfig do
     describe "#config" do
       let(:configs) do
         val = stng_values
-        dummy_module.configure :settings do
-          configure :nested do
-            configure :deep_nested do
-              config one: val[:one]
-              config.str text: val[:text]
-              config float_point: val[:float_point], type: :float
-              config none: val[:none], type: NilClass
+        support_dummy_module.tap do |dummy_module|
+          dummy_module.configure :settings do
+            configure :nested do
+              configure :deep_nested do
+                config one: val[:one]
+                config.str text: val[:text]
+                config float_point: val[:float_point], type: :float
+                config none: val[:none], type: NilClass
+              end
             end
           end
         end
-
-        dummy_module
       end
 
       it "has #one config parameter" do

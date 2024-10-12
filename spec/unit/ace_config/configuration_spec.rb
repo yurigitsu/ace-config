@@ -64,7 +64,7 @@ RSpec.describe AceConfig::Configuration do
 
     context "when loading from YAML" do
       before do
-        yaml_helper_tempfile do |temp_file|
+        support_yaml_file_tempfile do |temp_file|
           dummy_module.configure(:app_config, yaml: temp_file.path)
         end
       end
