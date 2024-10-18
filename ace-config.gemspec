@@ -7,13 +7,13 @@ require "ace_config/version"
 
 Gem::Specification.new do |spec|
   spec.name    = "ace-config"
-  spec.version = AceConfig::VERSION
+  spec.version = "0.1.0.beta.rc1c"
   spec.authors = ["yurigitsu"]
   spec.email   = ["yurigi.pro@gmail.com"]
   spec.license = "MIT"
 
   spec.summary     = "A flexible and easy-to-use configuration handling gem."
-  spec.description = "Managing configurations with type validation, configirations load and dumping support."
+  spec.description = "Managing, configurations with type validation, configirations load and export support."
   spec.homepage    = "https://github.com/yurigitsu/#{spec.name}"
 
   spec.required_ruby_version = ">= 3.0.0"
@@ -33,5 +33,5 @@ Gem::Specification.new do |spec|
 
   spec.metadata["rubygems_mfa_required"] = "true"
 
-  spec.add_dependency "bigdecimal"
+  spec.add_dependency "bigdecimal", "~> 3.0"
 end

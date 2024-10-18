@@ -4,6 +4,55 @@
 module AceConfig
   # This module handles configuration trees and loading data from various sources.
   module Configuration
+    # Isolated module provides methods for handling isolated configurations.
+    module Local
+      # Configures an isolated config tree and tracks it
+      #
+      # @param config_tree_name [Symbol] The name of the configuration tree
+      # @param opts [Hash] Options for configuration
+      # @yield The configuration block
+      # @return [self]
+      #
+      # @example
+      #   configure :isolated_settings do
+      #     config api_url: "https://api.example.com"
+      #   end
+      #
+      #   # Example of accessing the configuration
+      #   puts MyApp.isolated_settings.api_url # => "https://api.example.com"
+      def configure(config_tree_name, opts = {}, &block)
+        super
+
+        @isolated_configs ||= []
+        @isolated_configs << config_tree_name
+
+        self
+      end
+
+      # Inherits isolated configurations to the base class
+      #
+      # @param base [Class] The inheriting class
+      #
+      # @example
+      #   class ChildClass < ParentClass
+      #     # Automatically inherits isolated configurations
+      #   end
+      #
+      #   # Example of accessing inherited configurations
+      #   puts ChildClass.parent_settings.timeout # => 30
+      def inherited(base)
+        super
+
+        @isolated_configs.each do |parent_config|
+          hash = __send__(parent_config).to_h
+          schema = __send__(parent_config).type_schema
+          lock_schema = __send__(parent_config).lock_schema
+
+          base.configure parent_config, hash: hash, schema: schema, lock_schema: lock_schema
+        end
+      end
+    end
+
     # Creates a class-level method for the configuration tree.
     #
     # This method allows you to define a configuration tree using a block
@@ -14,6 +63,7 @@ module AceConfig
     # @option opts [Hash] :hash A hash containing configuration data.
     # @option opts [String] :json A JSON string containing configuration data.
     # @option opts [String] :yaml A file path to a YAML file containing configuration data.
+    # @option opts [Hash] :schema A hash representing the type schema for the configuration.
     # @yield [Setting] A block that builds the configuration tree.
     #
     # @example Configuring with a block
@@ -30,18 +80,18 @@ module AceConfig
     #
     # @example Loading from a YAML file
     #   configure :app_config, yaml: 'config/settings.yml'
+    #
+    # @example Loading with a schema
+    #   configure :app_config, hash: { name: "admin", policy: "allow" }, schema: { name: :str, policy: :str }
     def configure(config_tree_name, opts = {}, &block)
       settings = block ? AceConfig::Setting.new(&block) : AceConfig::Setting.new
 
       load_configs = load_data(opts) unless opts.empty?
-      settings.load_from_hash(load_configs) if load_configs
+      settings.load_from_hash(load_configs, schema: opts[:schema], lock_schema: opts[:lock_schema]) if load_configs
 
-      anonym_module = Module.new
-      anonym_module.define_method(config_tree_name) do |&tree_block|
+      define_singleton_method(config_tree_name) do |&tree_block|
         tree_block ? settings.instance_eval(&tree_block) : settings
       end
-
-      extend anonym_module
     end
 
     module_function

@@ -2,8 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe AceConfig do
-  let(:dummy_module) { Module.new { extend AceConfig::Configuration } }
+RSpec.describe "ClassLevel::DeepNested" do
   let(:stng_values) do
     {
       one: 1,
@@ -15,13 +14,16 @@ RSpec.describe AceConfig do
 
   context "when using a deep nested namespace" do
     let(:configs) do
-      dummy_module.configure :settings do
-        configure :nested do
-          configure :deep_nested do
-            config :opt
-            config.int :t_opt
-            config :type_opt, type: :int
-            config :cstm_type_opt, type: Integer
+      suppoert_dummy_instance_settings.new.tap do |obj|
+        obj.settings do
+          configure :nested do
+            configure :deep_nested do
+              config :opt
+              config.str :dsl_opt
+              config.int :t_opt
+              config :type_opt, type: :int
+              config :cstm_type_opt, type: Integer
+            end
           end
         end
       end
@@ -31,6 +33,16 @@ RSpec.describe AceConfig do
       it "has #opt config param" do
         configs.settings.config(opt: stng_values[:text])
         expect(configs.settings.opt).to eq(stng_values[:text])
+      end
+
+      it "has #dsl_opt config param" do
+        test_value = stng_values[:text]
+
+        configs.settings.nested.deep_nested do
+          config dsl_opt: test_value
+        end
+
+        expect(configs.settings.nested.deep_nested.dsl_opt).to eq(test_value)
       end
 
       it "has #type_opt config param" do
@@ -54,26 +66,33 @@ RSpec.describe AceConfig do
 
     describe "when extracting deep nested settings" do
       before do
-        configs.settings.nested.deep_nested.config(opt: stng_values[:text])
+        val = stng_values
+
+        configs.settings.nested.deep_nested.config(opt: val[:text])
+        configs.settings.nested.deep_nested do
+          dsl_opt val[:text]
+        end
         configs.settings.nested.deep_nested.config(t_opt: 10, type: :int)
         configs.settings.nested.deep_nested.config(type_opt: 10)
         configs.settings.nested.deep_nested.config(cstm_type_opt: 10)
       end
 
       it "returns the type schema of the configuration" do
-        expected_schema = { opt: :any, t_opt: :int, type_opt: :int, cstm_type_opt: Integer }
+        expected_schema = { opt: :any, dsl_opt: :str, t_opt: :int, type_opt: :int, cstm_type_opt: Integer }
 
         expect(configs.settings.nested.deep_nested.type_schema).to eq(expected_schema)
       end
 
       it "converts the configuration tree to a hash" do
-        expected_hash = { opt: stng_values[:text], t_opt: 10, type_opt: 10, cstm_type_opt: 10 }
+        expected_hash = { opt: stng_values[:text], dsl_opt: stng_values[:text], t_opt: 10, type_opt: 10,
+                          cstm_type_opt: 10 }
 
         expect(configs.settings.nested.deep_nested.to_h).to eq(expected_hash)
       end
 
       it "converts the configuration tree to JSON" do
-        expected_json = { opt: stng_values[:text], t_opt: 10, type_opt: 10, cstm_type_opt: 10 }.to_json
+        expected_json = { opt: stng_values[:text], dsl_opt: stng_values[:text], t_opt: 10, type_opt: 10,
+                          cstm_type_opt: 10 }.to_json
 
         expect(configs.settings.nested.deep_nested.to_json).to eq(expected_json)
       end
@@ -82,13 +101,15 @@ RSpec.describe AceConfig do
     describe "#config" do
       let(:configs) do
         val = stng_values
-        dummy_module.configure :settings do
-          configure :nested do
-            configure :deep_nested do
-              config one: val[:one]
-              config.str text: val[:text]
-              config float_point: val[:float_point], type: :float
-              config none: val[:none], type: NilClass
+        suppoert_dummy_instance_settings.new.tap do |obj|
+          obj.settings do
+            configure :nested do
+              configure :deep_nested do
+                config one: val[:one]
+                config.str text: val[:text]
+                config float_point: val[:float_point], type: :float
+                config none: val[:none], type: NilClass
+              end
             end
           end
         end
