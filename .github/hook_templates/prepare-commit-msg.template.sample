@@ -22,12 +22,19 @@ fi
 
 # Debug output
 echo "Template to append: $TEMPLATE_TO_APPEND"
+echo "Commit message file: $1"
 
-# Check if the template file exists
-if [[ -f "$TEMPLATE_TO_APPEND" ]]; then
-    # Append the selected template to the commit message
-    cat "$TEMPLATE_TO_APPEND" >> "$1"
-else
+# Ensure the template file exists
+if [[ ! -f "$TEMPLATE_TO_APPEND" ]]; then
     echo "Template file does not exist: $TEMPLATE_TO_APPEND"
     exit 1
 fi
+
+# Ensure the commit message file exists
+if [[ ! -f "$1" ]]; then
+    echo "Commit message file does not exist: $1"
+    exit 1
+fi
+
+# Append the selected template to the commit message
+cat "$TEMPLATE_TO_APPEND" >> "$1"
