@@ -14,6 +14,7 @@ Ruby gem created to simplify managing application configurations and enhance the
 
 
 
+
 ## Features
 
 - **Simple Configuration Management**: Easily define, set, and retrieve configuration options.
