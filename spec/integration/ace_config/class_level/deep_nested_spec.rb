@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe "ClassLevel::DeepNested::Namespace" do
+RSpec.describe "ClassLevel::DeepNested" do
   let(:stng_values) do
     {
       one: 1,
@@ -14,8 +14,8 @@ RSpec.describe "ClassLevel::DeepNested::Namespace" do
 
   context "when using a deep nested namespace" do
     let(:configs) do
-      suppoert_dummy_base_config.new.tap do |obj|
-        obj.configure :settings do
+      support_dummy_module.tap do |dummy_module|
+        dummy_module.configure :settings do
           configure :nested do
             configure :deep_nested do
               config :opt
@@ -101,8 +101,8 @@ RSpec.describe "ClassLevel::DeepNested::Namespace" do
     describe "#config" do
       let(:configs) do
         val = stng_values
-        suppoert_dummy_base_config.new.tap do |obj|
-          obj.configure :settings do
+        support_dummy_module.tap do |dummy_module|
+          dummy_module.configure :settings do
             configure :nested do
               configure :deep_nested do
                 config one: val[:one]

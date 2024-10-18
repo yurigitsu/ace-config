@@ -41,6 +41,8 @@ module AceConfig
       def base_type(value, type)
         type = fetch_type(type) if type.is_a?(Symbol)
 
+        return type.call(value) if type.is_a?(Proc)
+
         type.is_a?(Array) ? one_of(value, type) : value.is_a?(type)
       end
 

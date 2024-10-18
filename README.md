@@ -160,22 +160,22 @@ end
 ### Define with DSL Syntax
 ```ruby
 MyGem.settings do 
-  option 1
-  typed_opt_one 2
-  typed_opt_two 3 
+  option 'one'
+  typed_opt_one 1
+  typed_opt_two 2 
   # NOTE: access namespace via <block> 
   nested do 
-    option 1
+    option 'nested'
   end
 end
 ```
 
 ### Get configurations
 ```ruby
-MyGem.settings.option        # => 1
-MyGem.settings.typed_opt_one # => 2
-MyGem.settings.typed_opt_two # => 3
-MyGem.settings.nested.option # => 4
+MyGem.settings.option        # => 'one'
+MyGem.settings.typed_opt_one # => 1
+MyGem.settings.typed_opt_two # => 2
+MyGem.settings.nested.option # => 'nested'
 ```
 
 ### Define Configuration Type Validation
@@ -324,7 +324,7 @@ end
 MyGem.settings.type_schema # => {:opt_one=>:int, :opt_two=>:str}
 ```
 
-## Built-in Types
+## Built-in Types Features
 
 ### Base Types
 ```ruby
@@ -361,6 +361,31 @@ MyGem.settings.type_schema # => {:opt_one=>:int, :opt_two=>:str}
 :numeric    => [Integer, Float, BigDecimal],
 :kernel_num => [Integer, Float, BigDecimal, Complex, Rational],
 :chrono     => [Date, DateTime, Time]
+```
+### Union
+```ruby
+# List one of entries as built-in :symbols or classes
+
+MyApp.configure :settings do
+  config transaction_fee: 42, type: [Integer, :float, BigDecimal]
+  config vendor_code: 42, type: [String, :int]
+end 
+```
+### Custom
+```ruby
+MyApp.configure :settings do
+  config option: CustomClass.new, type: CustomClass
+end 
+```
+### Callable
+```ruby
+acc_proc = Proc.new { |val| val.respond_to?(:accounts) }
+holder_lam = ->(name) { name.length > 5 }
+
+MyApp.configure :settings do
+  config acc_data: User.new, type: acc_proc
+  config holder_name: 'John Doe', type: holder_lam
+end 
 ```
 
 ## Development

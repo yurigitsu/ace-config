@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe "InstanceLevel::Nested::Namespace" do
+RSpec.describe "ClassLevel::Nested" do
   let(:stng_values) do
     {
       one: 1,
@@ -14,8 +14,8 @@ RSpec.describe "InstanceLevel::Nested::Namespace" do
 
   context "when nested namespace" do
     let(:configs) do
-      suppoert_dummy_base_config.new.tap do |obj|
-        obj.configure :settings do
+      support_dummy_module.tap do |dummy_module|
+        dummy_module.configure :settings do
           configure :nested do
             config :opt
             config.str :dsl_opt
@@ -64,12 +64,14 @@ RSpec.describe "InstanceLevel::Nested::Namespace" do
       before do
         val = stng_values
 
-        configs.settings.nested do
-          config opt: val[:text]
-          dsl_opt val[:text]
-          config t_opt: val[:int]
-          config type_opt: val[:int]
-          config cstm_type_opt: val[:int]
+        configs.tap do |dummy_module|
+          dummy_module.settings.nested do
+            config opt: val[:text]
+            dsl_opt val[:text]
+            config t_opt: val[:int]
+            config type_opt: val[:int]
+            config cstm_type_opt: val[:int]
+          end
         end
       end
 
@@ -108,8 +110,8 @@ RSpec.describe "InstanceLevel::Nested::Namespace" do
       let(:configs) do
         val = stng_values
 
-        suppoert_dummy_base_config.new.tap do |obj|
-          obj.configure :settings do
+        support_dummy_module.tap do |dummy_module|
+          dummy_module.configure :settings do
             configure :nested do
               config one: val[:one]
               config.str text: val[:text]

@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe "ClassLevel::Flat::Namespace" do
+RSpec.describe "ClassLevel::Flat" do
   let(:stng_values) do
     {
       one: 1,

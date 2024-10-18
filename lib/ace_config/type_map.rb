@@ -11,6 +11,7 @@ module AceConfig
   # This class allows retrieval of Ruby classes based on type symbols and provides
   # methods to access collections of specific type symbols such as booleans, numerics,
   # and chronological types.
+
   class TypeMap
     TYPE_MAP = {
       # base types

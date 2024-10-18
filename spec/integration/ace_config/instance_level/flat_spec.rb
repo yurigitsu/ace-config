@@ -2,13 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe "InstanceLevel::Flat::Namespace" do
-  before do
-    stub_const("BaseConfig", Class.new { include AceConfiguration::Isolated })
-  end
-
-  let(:dummy_module) { BaseConfig }
-
+RSpec.describe "InstanceLevel::Flat" do
   let(:stng_values) do
     {
       one: 1,
@@ -20,8 +14,8 @@ RSpec.describe "InstanceLevel::Flat::Namespace" do
 
   context "when flat namespace" do
     let(:configs) do
-      BaseConfig.new.tap do |obj|
-        obj.configure :settings do
+      suppoert_dummy_instance_settings.new.tap do |obj|
+        obj.settings do
           config :opt
           config :dsl_opt
           config.int :t_opt
@@ -98,8 +92,8 @@ RSpec.describe "InstanceLevel::Flat::Namespace" do
       let(:configs) do
         val = stng_values
 
-        BaseConfig.new.tap do |obj|
-          obj.configure :settings do
+        suppoert_dummy_instance_settings.new.tap do |obj|
+          obj.settings do
             config one: val[:one]
             config.str text: val[:text]
             config float_point: val[:float_point], type: :float

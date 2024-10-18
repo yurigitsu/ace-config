@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
-RSpec.describe "Singleton::Configuration" do
+require "spec_helper"
+
+RSpec.describe "Local::Class::Configuration" do
   before do
-    suppoert_dummy_class("BaseConfig")
+    support_dummy_class("BaseConfig")
 
     BaseConfig.configure :app do
       config param_a: 1, type: :int
@@ -32,7 +34,6 @@ RSpec.describe "Singleton::Configuration" do
 
     it "modify child configuration without modify parent" do
       InheritedConfig.app { param_b "two" }
-
       aggregate_failures do
         expect(BaseConfig.app.param_a).to eq(1)
         expect(InheritedConfig.app.param_b).to eq("two")

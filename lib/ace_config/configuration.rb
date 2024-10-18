@@ -5,7 +5,7 @@ module AceConfig
   # This module handles configuration trees and loading data from various sources.
   module Configuration
     # Isolated module provides methods for handling isolated configurations.
-    module Isolated
+    module Local
       # Configures an isolated config tree and tracks it
       #
       # @param config_tree_name [Symbol] The name of the configuration tree
@@ -46,8 +46,9 @@ module AceConfig
         @isolated_configs.each do |parent_config|
           hash = __send__(parent_config).to_h
           schema = __send__(parent_config).type_schema
+          lock_schema = __send__(parent_config).lock_schema
 
-          base.configure parent_config, hash: hash, schema: schema
+          base.configure parent_config, hash: hash, schema: schema, lock_schema: lock_schema
         end
       end
     end
@@ -86,7 +87,7 @@ module AceConfig
       settings = block ? AceConfig::Setting.new(&block) : AceConfig::Setting.new
 
       load_configs = load_data(opts) unless opts.empty?
-      settings.load_from_hash(load_configs, schema: opts[:schema]) if load_configs
+      settings.load_from_hash(load_configs, schema: opts[:schema], lock_schema: opts[:lock_schema]) if load_configs
 
       define_singleton_method(config_tree_name) do |&tree_block|
         tree_block ? settings.instance_eval(&tree_block) : settings

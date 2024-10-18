@@ -29,15 +29,19 @@ module AceConfig
     #
     # ... (other type methods)
     AceConfig::TypeMap.list_types.each do |type|
-      define_method(type.downcase) { |stng| config(stng, type: type) }
+      define_method(type.downcase) do |stng, lock = nil|
+        params = { type: type }.tap { |obj| obj.merge!(lock: lock) if lock.nil? }
+        config(stng, **params)
+      end
     end
 
     # Initializes a new Setting instance.
     #
     # @yield [self] Configures the instance upon creation if a block is given.
     def initialize(&block)
-      @schema = {}
       @config_tree = {}
+      @schema = {}
+      @immutable_schema = {}
 
       instance_eval(&block) if block_given?
     end
@@ -51,17 +55,19 @@ module AceConfig
     #
     # @example Loading from a hash with type validation
     #   settings.load_from_hash({ name: "admin", max_connections: 10 }, schema: { name: :str, max_connections: :int })
-    def load_from_hash(data, schema: {})
+    def load_from_hash(data, schema: {}, lock_schema: {})
       data.each do |key, value|
         key = key.to_sym
         type = schema[key] if schema
+        lock = lock_schema[key] if lock_schema
 
         if value.is_a?(Hash) || value.is_a?(Setting)
-          configure(key) { load_from_hash(value, schema: schema[key]) }
+          configure(key) { load_from_hash(value, schema: schema[key], lock_schema: lock_schema[key]) }
         else
+          validate_mutable!(key, lock) if lock
           validate_setting!(value, type) if type
 
-          config(key => value, type: type)
+          config(key => value, type: type, lock: lock)
         end
       end
     end
@@ -94,16 +100,23 @@ module AceConfig
     #
     # @example Configuring a setting
     #   settings.config(max_connections: 10, type: :int)
-    def config(setting = nil, type: nil, **opt)
+    def config(setting = nil, type: nil, lock: nil, **opt)
       return self if !setting && opt.empty?
 
-      stngs = setting || opt
-      stng = extract_setting_info(stngs)
+      raw_stngs = setting || opt
+      stngs = extract_setting_info(raw_stngs)
 
-      stng_type = type || schema[stng[:name]] || :any
-      validate_setting!(stng[:value], stng_type)
+      # binding.pry
 
-      set_configuration(stng[:name], stng[:value], stng_type)
+      stng_lock = lock.nil? ? stngs[:lock] : lock
+      stng_lock = immutable_schema[stngs[:name]] if stng_lock.nil?
+
+      stng_type = type || schema[stngs[:name]] || :any
+
+      validate_mutable!(stngs[:name], stng_lock) if stngs[:value] && config_tree[stngs[:name]] && !lock
+      validate_setting!(stngs[:value], stng_type)
+
+      set_configuration(stng_name: stngs[:name], stng_val: stngs[:value], stng_type: stng_type, stng_lock: stng_lock)
     end
 
     # Returns the type schema of the configuration.
@@ -115,6 +128,14 @@ module AceConfig
       {}.tap do |hsh|
         config_tree.each do |k, v|
           v.is_a?(AceConfig::Setting) ? (hsh[k] = v.type_schema) : hsh.merge!(schema)
+        end
+      end
+    end
+
+    def lock_schema
+      {}.tap do |hsh|
+        config_tree.each do |k, v|
+          v.is_a?(AceConfig::Setting) ? (hsh[k] = v.lock_schema) : hsh.merge!(immutable_schema)
         end
       end
     end
@@ -156,7 +177,7 @@ module AceConfig
     protected
 
     # @return [Hash] The schema of configuration types.
-    attr_reader :schema
+    attr_reader :schema, :immutable_schema
 
     private
 
@@ -193,10 +214,16 @@ module AceConfig
     # @return [Hash] A hash containing the setting name and its corresponding value.
     def extract_setting_info(stngs)
       val = nil
-      name = stngs if stngs.is_a?(Symbol)
-      name, val = stngs.to_a.first if stngs.is_a?(Hash)
+      lock = nil
 
-      { name: name, value: val }
+      name = stngs if stngs.is_a?(Symbol)
+
+      if stngs.is_a?(Hash)
+        lock = stngs.delete(:lock)
+        name, val = stngs.to_a.first
+      end
+
+      { name: name, value: val, lock: lock }
     end
 
     # Validates the setting value against the expected type.
@@ -209,22 +236,26 @@ module AceConfig
       raise AceConfig::SettingTypeError.new(stng_type, stng_val) unless !stng_val || is_valid
     end
 
+    def validate_mutable!(name, stng_lock)
+      raise "<#{name}> setting is immutable" if stng_lock
+    end
+
     # Sets the configuration for a given setting name, value, and type.
     #
     # @param stng_name [Symbol] The name of the setting to configure.
     # @param stng_val [Object] The value to assign to the setting.
     # @param stng_type [Symbol] The type of the setting.
-    def set_configuration(stng_name, stng_val, stng_type)
+    def set_configuration(stng_name:, stng_val:, stng_type:, stng_lock:)
       schema[stng_name] = stng_type
       config_tree[stng_name] = stng_val
+      immutable_schema[stng_name] = stng_lock
+
       return if respond_to?(stng_name)
 
-      define_singleton_method(stng_name) do |value = nil, type: nil|
-        if value
-          config(**{ stng_name => value, type: type })
-        else
-          config_tree[stng_name]
-        end
+      define_singleton_method(stng_name) do |value = nil, type: nil, lock: nil|
+        return config_tree[stng_name] unless value
+
+        config(**{ stng_name => value, type: type, lock: lock })
       end
     end
   end

@@ -8,10 +8,10 @@ module Dummy
   #
   # @param name [String] The name of the class to be created.
   # @example Creating a dummy class
-  #   suppoert_dummy_class("TestClass")
+  #   support_dummy_class("TestClass")
   #   expect(TestClass).to be_a(Class)
-  def suppoert_dummy_class(name)
-    stub_const(name, Class.new { extend AceConfiguration::Isolated })
+  def support_dummy_class(name)
+    stub_const(name, Class.new { extend AceConfiguration::Local })
   end
 
   # Creates a base configuration class named "BaseConfig" and includes
@@ -20,8 +20,12 @@ module Dummy
   # @example Creating a base configuration class
   #   suppoert_dummy_base_config
   #   expect(BaseConfig).to be_a(Class)
-  def suppoert_dummy_base_config
-    stub_const("BaseConfig", Class.new { include AceConfiguration::Isolated })
+  def suppoert_dummy_instance_settings
+    stub_const("InstanceSettings", Class.new do
+      include AceConfiguration
+
+      configure :settings
+    end)
   end
 
   # Creates a dummy module that extends AceConfiguration.
