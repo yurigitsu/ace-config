@@ -191,6 +191,32 @@ end
 # => AceConfig::SettingTypeError
 ```
 
+### Union
+```ruby
+# List one of entries as built-in :symbols or classes
+
+MyApp.configure :settings do
+  config transaction_fee: 42, type: [Integer, :float, BigDecimal]
+  config vendor_code: 42, type: [String, :int]
+end 
+```
+### Custom
+```ruby
+MyApp.configure :settings do
+  config option: CustomClass.new, type: CustomClass
+end 
+```
+### Callable
+```ruby
+acc_proc = Proc.new { |val| val.respond_to?(:accounts) }
+holder_lam = ->(name) { name.length > 5 }
+
+MyApp.configure :settings do
+  config acc_data: User.new, type: acc_proc
+  config holder_name: 'John Doe', type: holder_lam
+end 
+```
+
 ## Loading Configuration Data
 
 The `AceConfig` module allows you to load configuration data from various sources, including YAML and JSON. Below are the details for each option.
@@ -361,31 +387,6 @@ MyGem.settings.type_schema # => {:opt_one=>:int, :opt_two=>:str}
 :numeric    => [Integer, Float, BigDecimal],
 :kernel_num => [Integer, Float, BigDecimal, Complex, Rational],
 :chrono     => [Date, DateTime, Time]
-```
-### Union
-```ruby
-# List one of entries as built-in :symbols or classes
-
-MyApp.configure :settings do
-  config transaction_fee: 42, type: [Integer, :float, BigDecimal]
-  config vendor_code: 42, type: [String, :int]
-end 
-```
-### Custom
-```ruby
-MyApp.configure :settings do
-  config option: CustomClass.new, type: CustomClass
-end 
-```
-### Callable
-```ruby
-acc_proc = Proc.new { |val| val.respond_to?(:accounts) }
-holder_lam = ->(name) { name.length > 5 }
-
-MyApp.configure :settings do
-  config acc_data: User.new, type: acc_proc
-  config holder_name: 'John Doe', type: holder_lam
-end 
 ```
 
 ## Development
