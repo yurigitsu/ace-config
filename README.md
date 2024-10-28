@@ -64,7 +64,7 @@ gem install ace-config
 require 'ace_config'
 
 module MyApp
-  include AceConfig
+  extend AceConfig
 end 
 
 MyApp.configure :settings do
@@ -127,7 +127,7 @@ end
 require 'ace_config'
 
 module MyGem
-  include AceConfig
+  extend AceConfig
 end 
 ```
 
