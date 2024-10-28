@@ -57,23 +57,6 @@ module AceConfig
     #
     # @example Loading from a hash with type validation
     #   settings.load_from_hash({ name: "admin", max_connections: 10 }, schema: { name: :str, max_connections: :int })
-    # def load_from_hash(data, schema: {}, lock_schema: {})
-    #   data.each do |key, value|
-    #     key = key.to_sym
-    #     type = schema[key] if schema
-    #     lock = lock_schema[key] if lock_schema
-
-    #     if value.is_a?(Hash) || value.is_a?(Setting)
-    #       configure(key) { load_from_hash(value, schema: schema[key], lock_schema: lock_schema[key]) }
-    #     else
-    #       validate_mutable!(key, lock) if lock
-    #       validate_setting!(value, type) if type
-
-    #       config(key => value, type: type, lock: lock)
-    #     end
-    #   end
-    # end
-
     def load_from_hash(data, schema: {}, lock_schema: {})
       data.each do |key, value|
         key = key.to_sym
