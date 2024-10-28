@@ -5,6 +5,8 @@ require "json"
 
 # AceConfig module provides functionality for managing AceConfig features.
 module AceConfig
+  # rubocop:disable Metrics/ClassLength
+
   # Setting class provides a configuration tree structure for managing settings.
   #
   # This class allows for dynamic configuration management, enabling
@@ -55,6 +57,23 @@ module AceConfig
     #
     # @example Loading from a hash with type validation
     #   settings.load_from_hash({ name: "admin", max_connections: 10 }, schema: { name: :str, max_connections: :int })
+    # def load_from_hash(data, schema: {}, lock_schema: {})
+    #   data.each do |key, value|
+    #     key = key.to_sym
+    #     type = schema[key] if schema
+    #     lock = lock_schema[key] if lock_schema
+
+    #     if value.is_a?(Hash) || value.is_a?(Setting)
+    #       configure(key) { load_from_hash(value, schema: schema[key], lock_schema: lock_schema[key]) }
+    #     else
+    #       validate_mutable!(key, lock) if lock
+    #       validate_setting!(value, type) if type
+
+    #       config(key => value, type: type, lock: lock)
+    #     end
+    #   end
+    # end
+
     def load_from_hash(data, schema: {}, lock_schema: {})
       data.each do |key, value|
         key = key.to_sym
@@ -64,10 +83,7 @@ module AceConfig
         if value.is_a?(Hash) || value.is_a?(Setting)
           configure(key) { load_from_hash(value, schema: schema[key], lock_schema: lock_schema[key]) }
         else
-          validate_mutable!(key, lock) if lock
-          validate_setting!(value, type) if type
-
-          config(key => value, type: type, lock: lock)
+          handle_value(key, value, type, lock)
         end
       end
     end
@@ -106,17 +122,10 @@ module AceConfig
       raw_stngs = setting || opt
       stngs = extract_setting_info(raw_stngs)
 
-      # binding.pry
+      stng_lock = determine_lock(stngs, lock)
+      stng_type = determine_type(stngs, type)
 
-      stng_lock = lock.nil? ? stngs[:lock] : lock
-      stng_lock = immutable_schema[stngs[:name]] if stng_lock.nil?
-
-      stng_type = type || schema[stngs[:name]] || :any
-
-      validate_mutable!(stngs[:name], stng_lock) if stngs[:value] && config_tree[stngs[:name]] && !lock
-      validate_setting!(stngs[:value], stng_type)
-
-      set_configuration(stng_name: stngs[:name], stng_val: stngs[:value], stng_type: stng_type, stng_lock: stng_lock)
+      validate_and_set_configuration(stngs, stng_lock, stng_type)
     end
 
     # Returns the type schema of the configuration.
@@ -226,6 +235,13 @@ module AceConfig
       { name: name, value: val, lock: lock }
     end
 
+    def handle_value(key, value, type, lock)
+      validate_mutable!(key, lock) if lock
+      validate_setting!(value, type) if type
+
+      config(key => value, type: type, lock: lock)
+    end
+
     # Validates the setting value against the expected type.
     #
     # @param stng_val [Object] The value of the setting to validate.
@@ -258,5 +274,21 @@ module AceConfig
         config(**{ stng_name => value, type: type, lock: lock })
       end
     end
+
+    def determine_lock(stngs, lock)
+      lock.nil? ? stngs[:lock] : lock
+    end
+
+    def determine_type(stngs, type)
+      type || schema[stngs[:name]] || :any
+    end
+
+    def validate_and_set_configuration(stngs, stng_lock, stng_type)
+      validate_mutable!(stngs[:name], stng_lock) if stngs[:value] && config_tree[stngs[:name]] && !stng_lock
+      validate_setting!(stngs[:value], stng_type)
+
+      set_configuration(stng_name: stngs[:name], stng_val: stngs[:value], stng_type: stng_type, stng_lock: stng_lock)
+    end
   end
+  # rubocop:enable Metrics/ClassLength
 end

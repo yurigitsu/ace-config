@@ -14,20 +14,6 @@ module Dummy
     stub_const(name, Class.new { extend AceConfiguration::Local })
   end
 
-  # Creates a base configuration class named "BaseConfig" and includes
-  # AceConfiguration::Isolated.
-  #
-  # @example Creating a base configuration class
-  #   suppoert_dummy_base_config
-  #   expect(BaseConfig).to be_a(Class)
-  def suppoert_dummy_instance_settings
-    stub_const("InstanceSettings", Class.new do
-      include AceConfiguration
-
-      configure :settings
-    end)
-  end
-
   # Creates a dummy module that extends AceConfiguration.
   #
   # @return [Module] A new module that extends AceConfiguration.

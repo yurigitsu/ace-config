@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe "Local::Class::Configuration" do
+RSpec.describe "ClassLevel::Local::Configs" do
   before do
     support_dummy_class("BaseConfig")
 

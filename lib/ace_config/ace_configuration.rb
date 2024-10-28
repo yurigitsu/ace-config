@@ -30,44 +30,6 @@
 module AceConfiguration
   # Extends the base class with AceConfig::Configuration module methods
   #
-  # @param base [Class] The class including this module
-  # @return [void]
-  def self.included(base)
-    # base.include(AceConfig::Configuration)
-    base.extend InstanceConfig
-    base.include InstanceConfig
-  end
-
-  # Modify constructor ?
-
-  module InstanceConfig
-    def configure(config_tree_name, opts = {}, &block)
-      settings = block ? AceConfig::Setting.new(&block) : AceConfig::Setting.new
-
-      load_configs = AceConfig::Configuration.load_data(opts) unless opts.empty?
-      settings.load_from_hash(load_configs, schema: opts[:schema], lock_schema: opts[:lock_schema]) if load_configs
-
-      @isolated_configs ||= []
-      @isolated_configs << { config_tree_name => settings }
-
-      define_method(config_tree_name) do |&tree_block|
-        tree_block ? settings.instance_eval(&tree_block) : settings
-      end
-    end
-
-    def inherited(base)
-      super
-
-      @isolated_configs.map do |elem|
-        elem.each do |name, configs|
-          base.configure name, hash: configs.to_h, schema: configs.type_schema, lock_schema: configs.lock_schema
-        end
-      end
-    end
-  end
-
-  # Extends the base class with AceConfig::Configuration module methods
-  #
   # @param base [Class] The class extending this module
   # @return [void]
   def self.extended(base)
