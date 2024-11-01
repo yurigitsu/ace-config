@@ -4,6 +4,8 @@ source "https://rubygems.org"
 
 gemspec
 
+gem "fasterer", "~> 0.11.0"
+gem "overcommit"
 gem "pry"
 gem "rake"
 gem "rspec", "~> 3.0"

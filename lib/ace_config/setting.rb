@@ -32,7 +32,9 @@ module AceConfig
     # ... (other type methods)
     AceConfig::TypeMap.list_types.each do |type|
       define_method(type.downcase) do |stng, lock = nil|
-        params = { type: type }.tap { |obj| obj.merge!(lock: lock) if lock.nil? }
+        params = { type: type }
+        params[:lock] = lock if lock.nil?
+
         config(stng, **params)
       end
     end
