@@ -20,6 +20,18 @@ RuboCop:
   enabled: true
   on_warn: fail # Treat all warnings as failures
 
+BundleAudit:
+  enabled: true
+  on_warn: fail
+
+BundleCheck:
+  enabled: true
+  on_warn: fail
+
+BundleOutdated:
+  enabled: true
+  on_warn: fail
+
 Rspec:
   enabled: true
   on_warn: fail

@@ -4,6 +4,7 @@ source "https://rubygems.org"
 
 gemspec
 
+gem "bundler-audit", "~> 0.9.2"
 gem "fasterer", "~> 0.11.0"
 gem "overcommit"
 gem "pry"
